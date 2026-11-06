@@ -3810,14 +3810,21 @@ function startBugs(){
 
 // 🗣️ Bajtík mluví (český hlas prohlížeče)
 let csVoice = null;
-function pickVoice(){ try { const v = speechSynthesis.getVoices(); csVoice = v.find(x => /^cs/i.test(x.lang)) || null; } catch(e){} }
+function pickVoice(){
+  try {
+    // nejlepší dostupný český hlas: Premium/Enhanced (Mac), Natural/Online (Edge), Google (Chrome)
+    const score = v => (/premium/i.test(v.name) ? 60 : 0) + (/natural|online/i.test(v.name) ? 55 : 0) + (/enhanced|vylepšen/i.test(v.name) ? 45 : 0) + (/google/i.test(v.name) ? 20 : 0);
+    const vs = speechSynthesis.getVoices().filter(x => /^cs/i.test(x.lang)).sort((a, b) => score(b) - score(a));
+    csVoice = vs[0] || null;
+  } catch(e){}
+}
 try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch(e){}
 function speak(t){
   if (muted || !csVoice || viewerMode) return;
   try {
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(t.replace(/\p{Extended_Pictographic}|\uFE0F|\u200D/gu, '').replace(/[„“]/g, ''));
-    u.voice = csVoice; u.lang = csVoice.lang; u.rate = 1.08; u.pitch = 1.35; speechSynthesis.speak(u);
+    const u = new SpeechSynthesisUtterance(t.replace(/\p{Extended_Pictographic}|\uFE0F|\u200D/gu, '').replace(/[„“]/g, '').replace(/…/g, ',').replace(/\s+/g, ' ').trim());
+    u.voice = csVoice; u.lang = csVoice.lang; u.rate = 1.02; u.pitch = 1.08; u.volume = 1; speechSynthesis.speak(u);
   } catch(e){}
 }
 
