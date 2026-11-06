@@ -3377,15 +3377,15 @@ function syncTools(){
   m.classList.toggle('on', !!(root._nocss || root._retro));
 }
 
-/* ====== HACKER REŽIM (5× klik na adresu nebo napiš „hack“) ====== */
+/* ====== HACKER REŽIM (5× klik na adresu, nebo Cmd/Ctrl/Alt + H) ====== */
 let hackClicks = [], typed = '';
 $('#url').addEventListener('click', () => {
   const t = Date.now(); hackClicks = hackClicks.filter(x => t - x < 2000); hackClicks.push(t);
   if (hackClicks.length >= 5){ hackClicks = []; toggleHack(); }
 });
 addEventListener('keydown', e => {
-  if (e.target.matches && e.target.matches('input,textarea') || !$('#builder').classList.contains('on')) return;
-  typed = (typed + (e.key || '').toLowerCase()).slice(-4); if (typed === 'hack'){ typed = ''; toggleHack(); }
+  if (!$('#builder').classList.contains('on')) return;
+  if ((e.metaKey || e.ctrlKey || e.altKey) && e.code === 'KeyH'){ e.preventDefault(); toggleHack(); }
 });
 function toggleHack(){ root._hack = !root._hack; if (root._hack){ matrix(); badge('hacker'); } update(); }
 function matrix(){
