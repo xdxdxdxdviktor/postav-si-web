@@ -2565,6 +2565,53 @@ section.stage{position:relative}
 .emo button.sel{border-color:var(--acc);background:rgba(124,92,255,.2);transform:scale(1.08)}
 @media (max-width:1280px){.pstep .l{display:none}}
 
+/* ---------- 7 FUNKCÍ ---------- */
+#tFuture.on{background:linear-gradient(135deg,#00fff0,#ff00d4);border-color:transparent;color:#05010f}
+#bugs{position:absolute;inset:0;z-index:7;cursor:crosshair;background:rgba(255,94,98,.06)}
+.bug{position:absolute;left:0;top:0;font-size:38px;width:46px;height:46px;display:grid;place-items:center;cursor:pointer;user-select:none;touch-action:none}
+.bug.dead{opacity:0;transition:opacity .4s}
+.bughud{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:#ff5e62;color:#fff;font:800 17px Inter,sans-serif;padding:9px 18px;border-radius:999px;z-index:8;box-shadow:0 10px 30px rgba(0,0,0,.4);white-space:nowrap}
+.bugbtn{border-color:#ff5e62;color:#fff;background:rgba(255,94,98,.12)}
+.slg{margin:2px 0 8px 18px;padding:7px 12px;border-radius:999px;border:1px solid var(--acc);background:rgba(124,92,255,.15);color:#fff;font:700 13px Inter,sans-serif}
+#cert{position:fixed;inset:0;z-index:95;background:rgba(7,7,15,.9);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px}
+#cert.on{display:flex}
+.cwrap{display:grid;grid-template-columns:1fr 300px;gap:22px;width:min(1180px,100%);align-items:center}
+.cside{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.cside h3{margin:0;font-size:24px}
+#qrcert{display:grid;place-items:center;min-height:120px}
+.paper{container-type:inline-size;aspect-ratio:1.414/1;width:100%;background:#fffdf6;color:#1a1a2e;border-radius:10px;padding:2.2cqw;box-shadow:0 40px 90px -20px rgba(0,0,0,.8);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pin{position:relative;height:100%;border:.5cqw solid transparent;border-radius:6px;background:linear-gradient(#fffdf6,#fffdf6) padding-box,linear-gradient(135deg,#7c5cff,#00d4ff,#f953c6) border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3cqw;gap:1.2cqw}
+.ck{font:900 6.2cqw 'Playfair Display',serif;letter-spacing:.6cqw;background:linear-gradient(135deg,#7c5cff,#00a8cc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cs{font:600 1.6cqw Inter,sans-serif;letter-spacing:.4cqw;text-transform:uppercase;color:#6b6f8e;margin-top:-.8cqw}
+.cp{font:500 2cqw Inter,sans-serif;color:#3b3f5c;line-height:1.5}
+.cn{font:italic 800 6cqw 'Playfair Display',serif;color:#1a1a2e;border-bottom:.25cqw solid #d9dbea;padding:0 4cqw .6cqw;min-width:50%}
+.cn.empty{color:#c5c8db}
+.cb{font-size:3cqw;letter-spacing:.6cqw}
+.cft{display:flex;justify-content:space-between;width:100%;margin-top:1.5cqw;font:500 1.5cqw Inter,sans-serif;color:#6b6f8e}
+.cft div{display:flex;flex-direction:column;align-items:center;gap:.3cqw;min-width:22%}
+.cft b{font-size:1.8cqw;color:#1a1a2e;border-top:.15cqw solid #c5c8db;padding-top:.6cqw;width:100%}
+.seal{position:absolute;top:3cqw;right:4cqw;width:11cqw;height:11cqw;border-radius:50%;background:conic-gradient(#7c5cff,#00d4ff,#f953c6,#7c5cff);display:grid;place-items:center;color:#fff;font:900 1.5cqw/1.15 Inter,sans-serif;text-align:center;transform:rotate(12deg);box-shadow:0 0 0 .5cqw #fffdf6,0 0 0 .8cqw #7c5cff}
+#certview.on{display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.cvwrap{width:min(1000px,100%);display:flex;flex-direction:column;gap:14px}
+.cvbtns{display:flex;gap:10px}
+.cvbtns a{flex:1;text-align:center;text-decoration:none}
+.gav{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none;border:2px solid #fff}
+.spotcap{display:flex;align-items:center;gap:10px}
+.spotcap .gav{width:54px;height:54px}
+.gcard{position:relative}
+.gcard .gav{position:absolute;top:8px;right:8px;width:40px;height:40px}
+.gclear{position:fixed;right:14px;bottom:14px;border:1px solid var(--line);background:var(--panel);color:var(--mut);padding:8px 12px;border-radius:10px;font-size:13px;opacity:.5}
+@media (max-width:900px){.cwrap{grid-template-columns:1fr}}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body{background:#fff!important;overflow:visible!important}
+  body::before{display:none!important}
+  body *{visibility:hidden!important}
+  #cert .paper,#cert .paper *{visibility:visible!important}
+  #cert{position:static!important;background:none!important;backdrop-filter:none!important}
+  #cert .paper{position:fixed;left:0;top:0;width:100vw;height:100vh;border-radius:0;box-shadow:none;aspect-ratio:auto}
+}
+
 /* ---------- PREVIEW ---------- */
 section.stage{padding:22px;display:flex;flex-direction:column;min-width:0;min-height:0}
 .browser{flex:1;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0b0c16;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 0 1px rgba(124,92,255,.08)}
@@ -2637,7 +2684,7 @@ section.stage{padding:22px;display:flex;flex-direction:column;min-width:0;min-he
     <section class="stage">
       <div class="phead">
         <div class="lb">👀 <b>Živý náhled</b> · mění se, jak klikáš</div>
-        <div class="tools" id="tools"><button id="tNoCss" onclick="toggleNoCss()">💥 Bez CSS</button><button id="tRetro" onclick="toggleRetro()">⏳ Rok 1998</button></div>
+        <div class="tools" id="tools"><button id="tNoCss" onclick="toggleNoCss()">💥 Bez CSS</button><button id="tRetro" onclick="toggleRetro()">⏳ Rok 1998</button><button id="tFuture" onclick="toggleFuture()">🚀 Rok 2050</button></div>
         <div class="dev"><button id="dvd" class="sel" onclick="setDev('desktop')">🖥️ Počítač</button><button id="dvm" onclick="setDev('mobile')">📱 Mobil</button></div>
       </div>
       <div class="browser">
@@ -2682,10 +2729,11 @@ section.stage{padding:22px;display:flex;flex-direction:column;min-width:0;min-he
     <div class="side"><h3>🏆 Žebříček dne</h3><ol id="lead"></ol><div class="gcta">Postav si taky svůj web!<br>Za 3 minuty, tady u stánku 👉</div></div>
   </div>
   <div class="gstrip" id="gstrip"></div>
+  <button class="gclear" id="gclear" onclick="clearG()">🗑️ Vymazat galerii</button>
 </div>
 
 <div id="cam"><div class="cbox">
-  <h3>📸 Barvy z tvého oblečení</h3>
+  <h3 id="camH">📸 Barvy z tvého oblečení</h3>
   <p id="camTxt"></p>
   <div class="cview" id="camView"><video id="camV" autoplay playsinline muted></video><canvas id="camC"></canvas><div class="guide" id="camGuide"><span>sem dej svoje oblečení 👕</span></div><div id="camCd"></div></div>
   <div class="cpal" id="camPal"></div>
@@ -2694,6 +2742,18 @@ section.stage{padding:22px;display:flex;flex-direction:column;min-width:0;min-he
 </div></div>
 <canvas id="matrix"></canvas><div id="hackmsg">ACCESS GRANTED_</div>
 <div id="toast"></div>
+
+<!-- CERTIFIKÁT -->
+<div id="cert"><div class="cwrap">
+  <div class="paper" id="paper"></div>
+  <div class="cside">
+    <h3>🎓 Tvůj certifikát</h3>
+    <div><label class="lbl">Tvoje jméno (stačí křestní)</label><input class="txt" id="certIn" maxlength="28" placeholder="Např. Jana" oninput="certName=this.value;renderCert()"></div>
+    <div class="qrbig" style="padding:14px;gap:6px"><b style="font-size:15px">📱 Certifikát do mobilu</b><div id="qrcert"></div></div>
+    <div class="cbtns"><button class="btn-p" onclick="printCert()">🖨️ Vytisknout</button><button class="btn-s" onclick="closeCert()">Zavřít</button></div>
+  </div>
+</div></div>
+<div id="certview" class="screen"><div class="cvwrap"><div class="paper" id="paper2"></div><div class="cvbtns"><a class="btn-p" id="cvWeb" href="#">🌐 Otevřít můj web</a><a class="btn-s" id="cvSchool" href="https://1kspa.wordpress.com/" target="_blank" rel="noopener">🎓 1. KŠPA</a></div></div></div>
 
 <!-- IDLE -->
 <div id="idle"><div>
@@ -2767,7 +2827,8 @@ const JSF = {
   anim:{e:'✨',l:'Animace',d:'Bloky plynule vyjedou'},
   like:{e:'❤️',l:'Tlačítko Like',d:'Počítá lajky (potřebuje Úvod)'},
   theme:{e:'🌙',l:'Přepínač tématu',d:'Den / noc jedním klikem (potřebuje Menu)'},
-  confetti:{e:'🎉',l:'Konfety',d:'Oslava po kliknutí na tlačítko'}
+  confetti:{e:'🎉',l:'Konfety',d:'Oslava po kliknutí na tlačítko'},
+  pet:{e:'🐕',l:'Mazlíček',d:'Zvířátko, co běhá za kurzorem'}
 };
 const JKEYS = Object.keys(JSF);
 const STEPS = ['Nápad','Rozložení','HTML','CSS','JavaScript','Hotovo'];
@@ -2838,7 +2899,7 @@ function buildHTML(s, clean){
     contact: () => [`<section${at('contact','contact')}>`, `  <h2>Napiš nám</h2>`, `  <form>`, `    <input placeholder="Tvůj e-mail">`, `    <button class="btn">Odeslat</button>`, `  </form>`, `</section>`],
     footer: () => [`<footer${at('footer','')}>© 2026 ${name} · vyrobeno s ❤️ a kódem</footer>`]
   };
-  return s.blocks.map(b => P[b]().join('\n')).join('\n\n');
+  return s.blocks.map(b => P[b]().join('\n')).join('\n\n') + (s.js.pet ? `\n\n<div class="pet"><span>${PETS[s.type] || '🐕'}</span></div>` : '');
 }
 
 function buildCSS(s){
@@ -2886,6 +2947,11 @@ document.querySelector('.like').onclick = () => {
 document.querySelector('.theme-btn').onclick = () => {
   document.body.classList.toggle('light');
 };`);
+  if (s.js.pet) out.push(`// 🐕 Mazlíček běhá za myší
+document.addEventListener('mousemove', e => {
+  pet.style.left = e.pageX + 'px';
+  pet.style.top = e.pageY + 'px';
+});`);
   if (s.js.confetti) out.push(`// 🎉 Konfety
 document.querySelector('.btn').onclick = () => {
   for (let i = 0; i < 80; i++) {
@@ -3021,6 +3087,24 @@ nav.center .logo{margin:0}
 .hack h1,.hack h2,.hack .logo{font-family:'JetBrains Mono',monospace!important;text-shadow:0 0 12px #00ff66}
 .hack .btn{color:#000}
 .hack .emoji,.hack .tile{filter:grayscale(1) brightness(1.4) sepia(1) hue-rotate(70deg) saturate(4)}
+.site.future{--bg:#05010f;--fg:#e9f6ff;--card:rgba(255,255,255,.06);--line:rgba(0,255,240,.3);background:radial-gradient(1200px 600px at 10% -10%,rgba(0,255,240,.18),transparent 60%),radial-gradient(900px 500px at 110% 10%,rgba(255,0,200,.18),transparent 60%),#05010f;font-family:'Space Grotesk',Inter,sans-serif}
+.site.future::before{content:'🛸 WEB ROKU 2050 · NAČTENO ZA 0,0001 s · HOLOGRAM MÓD';display:block;text-align:center;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.2em;color:#00fff0;padding:6px;background:rgba(0,255,240,.06);border-bottom:1px solid rgba(0,255,240,.3)}
+.future nav{background:rgba(255,255,255,.04);backdrop-filter:blur(12px)}
+.future .hero h1,.future h2{background:linear-gradient(90deg,#00fff0,#ff00d4,#00fff0);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:holo 3s linear infinite}
+@keyframes holo{to{background-position:200% center}}
+.future .card,.future .tile,.future .cta{background:rgba(255,255,255,.06)!important;border:1px solid rgba(0,255,240,.35)!important;backdrop-filter:blur(10px);box-shadow:0 0 30px rgba(0,255,240,.15),inset 0 0 20px rgba(255,255,255,.05);transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .12s}
+.future .btn{background:linear-gradient(135deg,#00fff0,#ff00d4)!important;color:#05010f;box-shadow:0 0 26px rgba(0,255,240,.6)}
+.future .emoji{filter:drop-shadow(0 0 18px #00fff0);animation:float50 3s ease-in-out infinite}
+@keyframes float50{50%{transform:translateY(-12px)}}
+.future .hero::before{background:conic-gradient(from 0deg,#00fff0,#ff00d4,#7c5cff,#00fff0);opacity:.28;filter:blur(60px);animation:spin50 8s linear infinite}
+@keyframes spin50{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.future footer::after{content:' · 🤖 navrženo s AI'}
+.pet{position:absolute;left:0;top:0;z-index:30;font-size:42px;line-height:1;cursor:pointer;user-select:none;touch-action:manipulation;filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}
+.pet span{display:inline-block;transition:transform .2s}
+.pet span.hop{animation:hop .5s}
+@keyframes hop{40%{translate:0 -30px}}
+.heart{position:absolute;font-size:24px;pointer-events:none;animation:heart .9s ease-out forwards;z-index:31}
+@keyframes heart{to{transform:translateY(-55px) scale(1.4);opacity:0}}
 .site.wf{background:#1a1c28;color:#fff}
 .wf .block{outline:2px dashed #4a5070;outline-offset:-6px;position:relative}
 .wf .block::after{content:attr(data-label);position:absolute;top:10px;right:14px;font:600 11px 'JetBrains Mono',monospace;color:#8a92b2;letter-spacing:.05em;text-transform:uppercase}
@@ -3043,15 +3127,16 @@ function render(root, s, o = {}){
   if (!root._site || root._html !== key){
     root.innerHTML = `<style>${root._nocss ? NOCSS_CSS : SITE_CSS}</style><div class="site">${html}</div>`;
     root._site = root.querySelector('.site'); root._html = key;
-    wire(root);
+    wire(root); startPet(root);
     const sp = root.querySelector('.like span'); if (sp) sp.textContent = likes;
   }
   const p = palOf(s), f = FONTS[s.font], dark = s.dark !== !!root._flip;
-  root._site.className = 'site' + (dark ? '' : ' light') + (s.js.anim ? ' anim' : '') + (o.wf ? ' wf' : '') + (root._retro ? ' retro' : '') + (root._hack ? ' hack' : '');
+  root._site.className = 'site' + (dark ? '' : ' light') + (s.js.anim ? ' anim' : '') + (o.wf ? ' wf' : '') + (root._retro ? ' retro' : '') + (root._hack ? ' hack' : '') + (root._future ? ' future' : '');
   root._site.style.cssText = `--primary:${p.a};--secondary:${p.b};--radius:${s.r}px;--font:${f.f},sans-serif`;
 }
 
 function wire(root){
+  if (!root._moveOn){ root._moveOn = true; root.addEventListener('pointermove', e => { tilt(root, e); petTarget(root, e); }); }
   const tried = () => { if (!viewerMode && step === 4) mark('jsTry'); };
   root.querySelector('.theme-btn')?.addEventListener('click', () => { tried(); root._flip = !root._flip; render(root, root._s, root._opts); });
   root.querySelector('.like')?.addEventListener('click', e => {
@@ -3116,7 +3201,7 @@ function renderCtrl(){
     h += `<p class="info">Obsah se balí do <b>značek</b> (tagů): <code>&lt;h1&gt;</code> je hlavní nadpis, <code>&lt;p&gt;</code> odstavec. Přepiš texty přímo v kódu:</p>`;
     h += `<div class="code">
       <div><span class=tg>&lt;h1&gt;</span></div><input class="ci" maxlength="30" value="${esc(S.name||t.name)}" oninput="S.name=this.value;update();mark('h1')"><div><span class=tg>&lt;/h1&gt;</span></div>
-      <div style="margin-top:10px"><span class=tg>&lt;p&gt;</span></div><input class="ci" maxlength="50" value="${esc(S.tag||t.tag)}" oninput="S.tag=this.value;update();mark('p2')"><div><span class=tg>&lt;/p&gt;</span></div>
+      <div style="margin-top:10px"><span class=tg>&lt;p&gt;</span></div><input class="ci" maxlength="50" value="${esc(S.tag||t.tag)}" id="tagIn" oninput="S.tag=this.value;update();mark('p2')"><button class="slg" onclick="slogan()">✨ Vymysli slogan</button><div><span class=tg>&lt;/p&gt;</span></div>
       <div style="margin-top:10px"><span class=tg>&lt;button</span> <span class=at>class</span>=<span class=st>"btn"</span><span class=tg>&gt;</span></div><input class="ci" maxlength="24" value="${esc(S.btn||t.btn)}" oninput="S.btn=this.value;update();mark('p2')"><div><span class=tg>&lt;/button&gt;</span></div>
     </div>`;
     h += `<div class="tip">🩻 V náhledu chyť modré kolečko a táhni ho doleva. Uvidíš skutečný kód svého webu.</div>`;
@@ -3125,7 +3210,7 @@ function renderCtrl(){
     h += kick('Krok 4 z 5 · CSS', 'Dej webu styl');
     h += ``;
     h += `<button class="rnd" onclick="randomStyle()">🎲 Překvap mě (náhodný styl)</button>`;
-    h += `<button class="rnd cambtn" onclick="openCam()">📸 Barvy z mého oblečení</button>`;
+    h += `<button class="rnd cambtn" onclick="openCam('colors')">📸 Barvy z mého oblečení</button>`;
     h += `<div><label class="lbl">Barvy</label><div class="g3">` + PALETTES.map((p,i) => `<button class="sw ${S.pal===i?'sel':''}" style="background:linear-gradient(135deg,${p.a},${p.b})" onclick="setK('pal',${i})">${p.l}</button>`).join('')
       + (S.pc ? `<button class="sw ${S.pal===6?'sel':''}" style="background:linear-gradient(135deg,${S.pc[0]},${S.pc[1]})" onclick="setK('pal',6)">📸 Z fotky</button>` : '') + `</div></div>`;
     h += `<div><label class="lbl">Písmo nadpisů</label><div class="g2">` + FONTS.map((f,i) => `<button class="opt ${S.font===i?'sel':''}" onclick="setK('font',${i})"><span class="e" style="font-family:${f.f},sans-serif;font-weight:800">Aa</span>${f.l}</button>`).join('') + `</div></div>`;
@@ -3137,6 +3222,7 @@ function renderCtrl(){
     h += kick('Krok 5 z 5 · JavaScript', 'Oživ to! ⚡');
     h += ``;
     h += `<div class="tip">🤫 Psst… klikni 5× rychle na adresní řádek v náhledu.</div>`;
+    h += `<button class="rnd bugbtn" onclick="startBugs()">🐛 Chyť bug! (minihra na 12 s)</button>`;
     h += `<div>` + JKEYS.map(k => `<button class="tgl ${S.js[k]?'on':''}" onclick="toggleJS('${k}')"><span class="e">${JSF[k].e}</span><span class="t"><b>${JSF[k].l}</b><span>${JSF[k].d}</span></span><span class="s"></span></button>`).join('') + `</div>`;
     
   }
@@ -3149,6 +3235,7 @@ function renderCtrl(){
     h += `<div class="stats"><div><b>${code.split('\n').length}</b><span>řádků kódu</span></div><div><b>${S.blocks.length}</b><span>bloků</span></div><div><b>${JKEYS.filter(k=>S.js[k]).length}</b><span>JS funkcí</span></div></div>`;
     h += `<div class="qrbig"><b>📱 Odnes si svůj web v mobilu</b><div id="qrme"></div><span>Naskenuj ho foťákem v mobilu. Celý web je schovaný přímo v QR kódu, nikam se nic nenahrává.</span>
       <div class="linkrow"><a id="mylink" href="#" target="_blank" rel="noopener">↗ Otevřít můj web</a><button onclick="copyLink(this)">📋 Kopírovat odkaz</button></div></div>`;
+    h += `<div class="g2"><button class="rnd" onclick="openCam('selfie')">${selfie ? '✓ Selfie je na TV' : '📸 Selfie na TV'}</button><button class="rnd" style="border-style:solid;border-color:var(--acc)" onclick="openCert()">🎓 Certifikát</button></div>`;
     h += `<div class="qrbox"><div id="qrschool"></div><div><b>🎓 Chceš to umět?</b><span>Tohle všechno se naučíš u nás na ${CONFIG.school} v oboru IT.<br><span style="font-family:'JetBrains Mono',monospace;color:var(--acc2)">${CONFIG.qrUrl.replace(/^https?:\/\//,'').replace(/\/$/,'')}</span></span></div></div>`;
   }
   const back = step > 0 ? `<button class="btn-s" onclick="go(${step-1})">←</button>` : '';
@@ -3159,6 +3246,7 @@ function renderCtrl(){
   h += `<div class="nav-btns">${back}${next}</div>`;
   $('#ctrl').innerHTML = h;
   renderTasks();
+  if (step === 5) makeQR();
 }
 
 function renderProgress(){
@@ -3312,7 +3400,8 @@ function go(n){
   if (n > maxStep){ maxStep = n; gain(20); }
   sfx('whoosh'); clearTimeout(botStepT); botStepT = setTimeout(() => say(BOT_STEP[n], 6000), 500);
   $('#tools').style.display = n >= 3 ? 'flex' : 'none';
-  if (n < 3){ root._nocss = false; root._retro = false; }
+  if (n < 3){ root._nocss = false; root._retro = false; root._future = false; }
+  if (bugGame){ cancelAnimationFrame(bugGame.raf); bugGame = null; $('#bugs')?.remove(); }
   if (n === 5) saveToGallery();
   renderProgress(); renderCtrl(); $('#ctrl').scrollTop = 0; update(); syncTools();
   knob.classList.toggle('hint', n === 2 && !done.has('xray'));
@@ -3324,7 +3413,7 @@ function go(n){
 
 function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); }
 function start(){ $('#duelbar').textContent = duel ? `⚔️ Hráč ${duel.p} · ${duel.theme}` : ''; $('#duelbar').classList.toggle('on', !!duel); start2(); }
-function start2(){ xp = 0; maxStep = 0; caps = {}; awarded = new Set(); renderXP(); done = new Set(); badges = new Set(); sessionId = Math.random().toString(36).slice(2); root._nocss = root._retro = root._hack = false; setDev('desktop'); S = fresh(); likes = 0; root._flip = false; root._html = ''; show('builder'); go(0); poke(); }
+function start2(){ xp = 0; maxStep = 0; caps = {}; awarded = new Set(); renderXP(); done = new Set(); badges = new Set(); sessionId = Math.random().toString(36).slice(2); root._nocss = root._retro = root._hack = root._future = false; selfie = null; certName = ''; setDev('desktop'); S = fresh(); likes = 0; root._flip = false; root._html = ''; show('builder'); go(0); poke(); }
 function restart(){ duel = null; hideIdle(); clearTimeout(idleT); S = fresh(); likes = 0; root._flip = false; root._html = ''; step = 0; show('intro'); }
 function kiosk(){ try { document.documentElement.requestFullscreen?.().catch(() => {}); } catch(e){} }
 
@@ -3334,7 +3423,7 @@ const unhex = h => new TextDecoder().decode(new Uint8Array((h.match(/../g) || []
 // celý web se zakóduje do krátkého textu (jen písmena, čísla a pomlčky) → vejde se do QR kódu
 function enc(s){
   const js = JKEYS.reduce((a, k, i) => a + (s.js[k] ? 1 << i : 0), 0);
-  const head = '' + TKEYS.indexOf(s.type) + s.pal + s.font + (s.dark ? 1 : 0) + String(s.r).padStart(2,'0') + js.toString(16)
+  const head = '' + TKEYS.indexOf(s.type) + s.pal + s.font + (s.dark ? 1 : 0) + String(s.r).padStart(2,'0') + js.toString(36)
              + VKEYS.map(k => s.v[k] || 0).join('') + s.blocks.map(k => BKEYS.indexOf(k)).join('');
   const pc = s.pal === 6 && s.pc ? s.pc.map(c => c.slice(1)).join('') : '';
   const em = s.em && EMOJIS.includes(s.em) ? EMOJIS.indexOf(s.em).toString(36) : '';
@@ -3342,12 +3431,12 @@ function enc(s){
 }
 function dec(h){
   const [w, head, n, g, b, pc, em] = h.split('-');
-  if (w !== 'w' || !/^\d{6}[0-9a-f]\d{6,}$/.test(head || '')) throw new Error('bad');
+  if (w !== 'w' || !/^\d{6}[0-9a-z]\d{6,}$/.test(head || '')) throw new Error('bad');
   const s = fresh();
   s.type = TKEYS[+head[0]] || 'portfolio'; s.pal = PALETTES[+head[1]] ? +head[1] : 0;
   if (head[1] === '6' && /^[0-9a-f]{12}$/.test(pc || '')){ s.pal = 6; s.pc = ['#' + pc.slice(0,6), '#' + pc.slice(6)]; } s.font = FONTS[+head[2]] ? +head[2] : 0;
   s.dark = head[3] === '1'; s.r = Math.min(32, +head.slice(4,6));
-  const js = parseInt(head[6], 16); JKEYS.forEach((k, i) => s.js[k] = !!(js & (1 << i)));
+  const js = parseInt(head[6], 36); JKEYS.forEach((k, i) => s.js[k] = !!(js & (1 << i)));
   VKEYS.forEach((k, i) => { const v = +head[7+i]; if (VARIANTS[k][v]) s.v[k] = v; });
   s.blocks = [...head.slice(12)].map(c => BKEYS[+c]).filter((k, i, arr) => k && arr.indexOf(k) === i);
   if (!s.blocks.length) s.blocks = ['hero'];
@@ -3384,7 +3473,7 @@ function makeQR(){
 const BADGES = {
   ux:['🏗️','Architekt','UX skóre 5/5'], xray:['🩻','Rentgenolog','Použij rentgen'], mobile:['📱','Mobilní mág','Zkus mobilní náhled'],
   stylist:['🎨','Stylista','Nastav barvy, písmo i tvar'], coder:['⚡','Kodér','Zapni 3+ JS funkce'], nocss:['💥','Demoliční četa','Rozbij web bez CSS'],
-  retro:['⏳','Cestovatel časem','Navštiv rok 1998'], hacker:['💻','Hacker','Najdi tajný režim 🤫'], photo:['📸','Fotomodel','Barvy z oblečení']
+  retro:['⏳','Cestovatel časem','Navštiv rok 1998'], hacker:['💻','Hacker','Najdi tajný režim 🤫'], photo:['📸','Fotomodel','Barvy z oblečení'], future:['🛸','Z budoucnosti','Navštiv rok 2050'], debug:['🐛','Debugger','Chyť všechny bugy']
 };
 let badges = new Set(), toastT;
 function badge(k){
@@ -3401,15 +3490,17 @@ function badgeBox(){
 }
 
 /* ====== BEZ CSS + STROJ ČASU ====== */
-function toggleNoCss(){ root._nocss = !root._nocss; if (root._nocss){ root._retro = false; badge('nocss'); } update(); syncTools(); }
-function toggleRetro(){ root._retro = !root._retro; if (root._retro){ root._nocss = false; badge('retro'); } update(); syncTools(); }
+function toggleNoCss(){ root._nocss = !root._nocss; if (root._nocss){ root._retro = root._future = false; badge('nocss'); } update(); syncTools(); }
+function toggleRetro(){ root._retro = !root._retro; if (root._retro){ root._nocss = root._future = false; badge('retro'); } update(); syncTools(); }
+function toggleFuture(){ root._future = !root._future; if (root._future){ root._nocss = root._retro = false; badge('future'); sfx('whoosh'); } update(); syncTools(); }
 function syncTools(){
   $('#tNoCss').classList.toggle('on', !!root._nocss); $('#tRetro').classList.toggle('on', !!root._retro);
   $('#tNoCss').textContent = root._nocss ? '🎨 Vrátit CSS' : '💥 Bez CSS';
   $('#tRetro').textContent = root._retro ? '🚀 Zpět do 2026' : '⏳ Rok 1998';
   const m = $('#pmsg');
-  m.textContent = root._nocss ? '😱 Bez CSS: tohle je holé HTML. Takhle vypadá každý web bez stylu.' : root._retro ? '⏳ Rok 1998: takhle vypadaly weby, když internet začínal.' : '';
-  m.classList.toggle('on', !!(root._nocss || root._retro));
+  $('#tFuture').classList.toggle('on', !!root._future); $('#tFuture').textContent = root._future ? '🕰️ Zpět do 2026' : '🚀 Rok 2050';
+  m.textContent = root._nocss ? '😱 Bez CSS: tohle je holé HTML. Takhle vypadá každý web bez stylu.' : root._retro ? '⏳ Rok 1998: takhle vypadaly weby, když internet začínal.' : root._future ? '🚀 Rok 2050: hologramy, sklo a 3D. Pohni myší nad kartami!' : '';
+  m.classList.toggle('on', !!(root._nocss || root._retro || root._future));
 }
 
 /* ====== HACKER REŽIM (5× klik na adresu, nebo Cmd/Ctrl/Alt + H) ====== */
@@ -3470,7 +3561,7 @@ let sessionId = null;
 function loadG(){ try { return JSON.parse(localStorage.getItem(GKEY) || '[]'); } catch(e){ return []; } }
 function saveG(a){ try { localStorage.setItem(GKEY, JSON.stringify(a.slice(-100))); } catch(e){} }
 function saveToGallery(){
-  const a = loadG(), e = {id: sessionId, c: enc(S), n: S.name || T().name, b: [...badges], u: uxScore(), x: xp, t: Date.now()};
+  const a = loadG(), e = {id: sessionId, c: enc(S), n: S.name || T().name, b: [...badges], u: uxScore(), x: xp, t: Date.now(), p: selfie || undefined};
   const i = a.findIndex(x => x.id === sessionId); if (i > -1) a[i] = e; else a.push(e); saveG(a);
 }
 let gList = [], gIdx = -1, spotRoot = null, gRaf = 0, gOn = false;
@@ -3489,10 +3580,10 @@ function refreshG(){
   $('#gNum').textContent = gList.length;
   const score = x => (x.x || 0) + x.b.length * 10 + x.u;
   const top = [...gList].sort((a, b) => score(b) - score(a) || a.t - b.t).slice(0, 6);
-  $('#lead').innerHTML = top.length ? top.map((x, i) => `<li><span class="m">${['🥇','🥈','🥉','4.','5.','6.'][i]}</span>${esc(x.n)}<small>${x.x || 0} XP · ${x.b.length} 🏅</small></li>`).join('')
+  $('#lead').innerHTML = top.length ? top.map((x, i) => `<li><span class="m">${['🥇','🥈','🥉','4.','5.','6.'][i]}</span>${av(x)}${esc(x.n)}<small>${x.x || 0} XP · ${x.b.length} 🏅</small></li>`).join('')
                                     : `<li style="color:var(--mut)">Zatím nikdo… buď první! 🚀</li>`;
   $('#gstrip').innerHTML = gList.slice(0, 14).map(x => { const s = decSafe(x.c); if (!s) return ''; const p = palOf(s);
-    return `<div class="gcard" style="background:linear-gradient(135deg,${p.a},${p.b})"><span class="e">${s.em || TYPES[s.type].e}</span>${esc(x.n)}</div>`; }).join('');
+    return `<div class="gcard" style="background:linear-gradient(135deg,${p.a},${p.b})"><span class="e">${s.em || TYPES[s.type].e}</span>${av(x)}${esc(x.n)}</div>`; }).join('');
 }
 function nextSpot(){
   if (!gList.length) return;
@@ -3501,7 +3592,7 @@ function nextSpot(){
   const h = $('#spot'); h.style.opacity = 0;
   setTimeout(() => {
     spotRoot._html = ''; render(spotRoot, s, {});
-    $('#spotcap').textContent = `${TYPES[s.type].e} ${x.n} · ${x.b.length} 🏅`;
+    $('#spotcap').innerHTML = `${av(x)}<span>${s.em || TYPES[s.type].e} ${esc(x.n)} · ${x.x || 0} XP · ${x.b.length} 🏅</span>`;
     h.scrollTop = 0; h.style.opacity = 1;
     cancelAnimationFrame(gRaf); const t0 = performance.now();
     const f = t => { const k = Math.min(1, Math.max(0, (t - t0 - 1500) / 5000)); h.scrollTop = (h.scrollHeight - h.clientHeight) * k; if (k < 1) gRaf = requestAnimationFrame(f); };
@@ -3511,7 +3602,9 @@ function nextSpot(){
 
 /* ====== BARVY Z OBLEČENÍ (webkamera → 2 nejvýraznější barvy) ====== */
 let camStream = null, camCols = null, camTimer = 0;
-async function openCam(){
+async function openCam(mode){
+  if (mode) camMode = mode;
+  $('#camH').textContent = camMode === 'selfie' ? '📸 Selfie na TV' : '📸 Barvy z tvého oblečení';
   $('#cam').classList.add('on'); camState('loading');
   try {
     if (!navigator.mediaDevices?.getUserMedia) throw new Error('no api');
@@ -3524,10 +3617,12 @@ function stopCam(){ if (camStream) camStream.getTracks().forEach(t => t.stop());
 function closeCam(){ clearInterval(camTimer); $('#camCd').style.display = 'none'; stopCam(); $('#cam').classList.remove('on'); }
 function camState(st){
   const v = $('#camV'), c = $('#camC'), g = $('#camGuide'), pal = $('#camPal'), b = $('#camBtns'), t = $('#camTxt');
-  v.style.display = st === 'live' ? 'block' : 'none'; g.style.display = st === 'live' ? 'block' : 'none';
+  v.style.display = st === 'live' ? 'block' : 'none'; g.style.display = st === 'live' && camMode !== 'selfie' ? 'block' : 'none';
   c.style.display = st === 'shot' ? 'block' : 'none'; pal.classList.toggle('on', st === 'shot');
   const cancel = `<button class="btn-s" onclick="closeCam()">Zrušit</button>`;
   if (st === 'loading'){ t.textContent = 'Zapínám kameru… když se prohlížeč zeptá, klikni na Povolit.'; b.innerHTML = cancel; }
+  if (st === 'live' && camMode === 'selfie'){ t.textContent = 'Usměj se! 😁 Fotka se ukáže na TV v galerii. Zůstane jen na tomhle notebooku.'; b.innerHTML = `<button class="btn-p" onclick="snap()">📸 Vyfotit</button>` + cancel; return; }
+  if (st === 'shot' && camMode === 'selfie'){ t.textContent = 'Super fotka! Pošleme ji na TV? 📺'; pal.classList.remove('on'); b.innerHTML = `<button class="btn-p" onclick="applySelfie()">✓ Poslat na TV</button><button class="btn-s" onclick="openCam()">↺ Znovu</button>` + cancel; return; }
   if (st === 'live'){ t.textContent = 'Postav se před kameru, ať je oblečení v rámečku. Pak klikni na Vyfotit.'; b.innerHTML = `<button class="btn-p" onclick="snap()">📸 Vyfotit</button>` + cancel; }
   if (st === 'nocam'){ t.innerHTML = 'Kamera tady není dostupná. Nevadí, můžeš <b>nahrát fotku</b>, třeba svého oblečení nebo oblíbeného obrázku.'; b.innerHTML = `<button class="btn-p" onclick="$('#camFile').click()">🖼️ Nahrát fotku</button>` + cancel; }
   if (st === 'shot'){
@@ -3558,7 +3653,7 @@ function grabFrom(src, mirror){
   c.width = 480; c.height = Math.round(480 * h / w);
   const ctx = c.getContext('2d', {willReadFrequently: true});
   ctx.save(); if (mirror){ ctx.translate(c.width, 0); ctx.scale(-1, 1); } ctx.drawImage(src, 0, 0, c.width, c.height); ctx.restore();
-  camCols = extractColors(ctx, c.width, c.height, mirror);
+  if (camMode !== 'selfie') camCols = extractColors(ctx, c.width, c.height, mirror);
   stopCam(); camState('shot');
 }
 function rgb2hsl(r, g, b){
@@ -3640,7 +3735,7 @@ const SFX = {
   blip: () => tone(1200, 0, .05, 'square', .025, 1500)
 };
 function sfx(k){ if (muted || viewerMode) return; try { SFX[k] && SFX[k](); } catch(e){} }
-function toggleMute(){ muted = !muted; try { localStorage.setItem('psw-mute', muted ? '1' : '0'); } catch(e){} $('#muteBtn').textContent = muted ? '🔇' : '🔊'; if (!muted) sfx('ding'); }
+function toggleMute(){ muted = !muted; if (muted){ try { speechSynthesis.cancel(); } catch(e){} } try { localStorage.setItem('psw-mute', muted ? '1' : '0'); } catch(e){} $('#muteBtn').textContent = muted ? '🔇' : '🔊'; if (!muted) sfx('ding'); }
 $('#muteBtn').textContent = muted ? '🔇' : '🔊';
 document.addEventListener('pointerdown', e => {
   lastX = e.clientX; lastY = e.clientY; lastAct = Date.now(); nudged = false;
@@ -3656,14 +3751,14 @@ const BOT_STEP = [
   'WOW! 🎉 Tohle je fakt dobrej web. Naskenuj si ho do mobilu 📱'
 ];
 const BOT_TYPE = {portfolio:'🎨 Umělec! To se mi líbí.', band:'🎸 Rock’n’roll! Už si vás pouštím.', gaming:'🎮 GG! Tohle bude epické.', cafe:'☕ Mmm… dám si flat white.', sport:'⚽ Góóól! Jdeme na to.', shop:'🛍️ Byznys je byznys! 💰'};
-const BOT_BADGE = {nocss:'Aaaa! Kde jsou moje šaty?! 😱', retro:'Rok 1998… tehdy jsem byl jen kalkulačka 🧮', hacker:'Jsi v systému… 😎 Nikomu to neříkej.', photo:'Sluší ti to! Web ladí s tvým outfitem 👕', mobile:'Na mobilu to vypadá skvěle 📱', xray:'Tak takhle vypadá web zevnitř 🤓'};
+const BOT_BADGE = {future:'Vítej v budoucnosti! Tady už weby píšou roboti jako já 🤖', nocss:'Aaaa! Kde jsou moje šaty?! 😱', retro:'Rok 1998… tehdy jsem byl jen kalkulačka 🧮', hacker:'Jsi v systému… 😎 Nikomu to neříkej.', photo:'Sluší ti to! Web ladí s tvým outfitem 👕', mobile:'Na mobilu to vypadá skvěle 📱', xray:'Tak takhle vypadá web zevnitř 🤓'};
 const BOT_NUDGE = ['Ťukni vlevo na jeden z typů webu 👈', 'Ťukni na blok ve Stavebnici, třeba 🧭 Menu!', 'Přepiš nadpis v kódu vlevo a sleduj náhled ✍️', 'Zmáčkni 🎲 Překvap mě, to je zábava!', 'Zapni 🎉 Konfety a klikni na tlačítko v náhledu!', 'Naskenuj QR kód a máš web v mobilu 📱'];
 const JOKES = ['Proč programátoři nosí brýle? Protože nevidí C# 🤓', 'Kolik programátorů je potřeba na výměnu žárovky? Žádný, to je hardware 💡', 'Mám rád cookies 🍪 Ty webové i ty k jídlu.', 'Moje oblíbená hudba? Algo-rytmy 🎵', 'Chyba 404: vtip nenalezen 🙃', 'Proč se HTML a CSS nehádají? Protože mají dobrý styl 💅', 'Já nespím. Jen čekám na tvůj klik 😴🖱️'];
 let botT = 0, botStepT = 0, jokeI = Math.floor(Math.random() * 7);
 function say(t, ms = 4800){
   if (!t || !$('#builder').classList.contains('on')) return;
   const b = $('#bot'); $('#botMsg').textContent = t; b.classList.remove('talk'); void b.offsetWidth; b.classList.add('talk');
-  sfx('blip'); clearTimeout(botT); botT = setTimeout(() => b.classList.remove('talk'), ms);
+  sfx('blip'); speak(t); clearTimeout(botT); botT = setTimeout(() => b.classList.remove('talk'), ms);
 }
 function botJoke(){ say(JOKES[jokeI++ % JOKES.length], 6000); gainCap('joke', 5, 2); }
 setInterval(() => {
@@ -3672,6 +3767,151 @@ setInterval(() => {
 }, 3000);
 const _markName = mark;
 mark = function(id){ const fresh = !done.has(id); _markName(id); if (fresh && id === 'name') setTimeout(() => { if (S.name) say(`„${S.name}“? To zní jako značka, co bude slavná! ⭐`); }, 1400); };
+
+/* ====== 7 FUNKCÍ ====== */
+const PETS = {portfolio:'🐈', band:'🦜', gaming:'🦖', cafe:'🐈', sport:'🐕', shop:'🐇'};
+let camMode = 'colors', selfie = null, certName = '', bugGame = null;
+
+// 🐛 Chyť bug
+function startBugs(){
+  if (bugGame) return;
+  const vp = $('#vp'), layer = document.createElement('div'); layer.id = 'bugs'; vp.appendChild(layer);
+  const hud = document.createElement('div'); hud.className = 'bughud'; layer.appendChild(hud);
+  const W = vp.clientWidth, H = vp.clientHeight, N = 8, T = 12000, bugs = []; let caught = 0; const t0 = performance.now();
+  const hudU = () => hud.textContent = `🐛 ${caught} / ${N}  ·  ⏱ ${Math.max(0, Math.ceil((T - (performance.now() - t0)) / 1000))} s`;
+  const end = win => {
+    if (!bugGame) return; cancelAnimationFrame(bugGame.raf); bugGame = null;
+    setTimeout(() => layer.remove(), win ? 700 : 300);
+    if (win){ badge('debug'); gain(40); sfx('level'); const r = vp.getBoundingClientRect(); confetti(r.left + r.width/2, r.top + r.height/2, S, 130); say('Všechny bugy pryč! Jsi pravý Debugger 🐛✅'); }
+    else { gain(caught * 3); say(`Chytil jsi ${caught} z ${N} bugů. Zkus to znovu! 🐛`); }
+  };
+  for (let i = 0; i < N; i++){
+    const el = document.createElement('div'); el.className = 'bug'; el.textContent = ['🐛','🪲','🐞','🦗'][i % 4];
+    const o = {el, x: Math.random() * (W - 70) + 10, y: Math.random() * (H - 100) + 50, vx: (Math.random() * 2 - 1) * 3, vy: (Math.random() * 2 - 1) * 3, dead: false};
+    el.addEventListener('pointerdown', ev => { ev.stopPropagation(); if (o.dead) return; o.dead = true; el.textContent = '💥'; el.classList.add('dead'); caught++; sfx('pop'); hudU(); if (caught === N) end(true); });
+    layer.appendChild(el); bugs.push(o);
+  }
+  const loop = t => {
+    if (!bugGame) return;
+    bugs.forEach(o => {
+      if (o.dead) return;
+      if (Math.random() < .03){ o.vx += (Math.random() - .5) * 2.5; o.vy += (Math.random() - .5) * 2.5; }
+      const sp = Math.hypot(o.vx, o.vy), mx = 4.2 + caught * .35; if (sp > mx){ o.vx *= mx / sp; o.vy *= mx / sp; }
+      o.x += o.vx; o.y += o.vy;
+      if (o.x < 0 || o.x > W - 46){ o.vx *= -1; o.x = Math.max(0, Math.min(W - 46, o.x)); }
+      if (o.y < 44 || o.y > H - 46){ o.vy *= -1; o.y = Math.max(44, Math.min(H - 46, o.y)); }
+      o.el.style.transform = `translate(${o.x}px,${o.y}px) rotate(${Math.atan2(o.vy, o.vx) * 180 / Math.PI + 90}deg)`;
+    });
+    hudU(); if (t - t0 > T) return end(false);
+    bugGame.raf = requestAnimationFrame(loop);
+  };
+  bugGame = {raf: requestAnimationFrame(loop)}; hudU(); sfx('whoosh'); say('Rychle! Bugy lezou po webu, mačkej je! 🐛', 3000);
+}
+
+// 🗣️ Bajtík mluví (český hlas prohlížeče)
+let csVoice = null;
+function pickVoice(){ try { const v = speechSynthesis.getVoices(); csVoice = v.find(x => /^cs/i.test(x.lang)) || null; } catch(e){} }
+try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch(e){}
+function speak(t){
+  if (muted || !csVoice || viewerMode) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t.replace(/\p{Extended_Pictographic}|\uFE0F|\u200D/gu, '').replace(/[„“]/g, ''));
+    u.voice = csVoice; u.lang = csVoice.lang; u.rate = 1.08; u.pitch = 1.35; speechSynthesis.speak(u);
+  } catch(e){}
+}
+
+// 🚀 Rok 2050: 3D naklánění karet
+function tilt(root, e){
+  if (!root._site || !root._site.classList.contains('future')) return;
+  const c = e.target.closest && e.target.closest('.card,.tile,.cta');
+  root.querySelectorAll('.tilting').forEach(x => { if (x !== c){ x.classList.remove('tilting'); x.style.removeProperty('--rx'); x.style.removeProperty('--ry'); } });
+  if (!c) return; const r = c.getBoundingClientRect(); c.classList.add('tilting');
+  c.style.setProperty('--ry', ((e.clientX - r.left) / r.width - .5) * 26 + 'deg');
+  c.style.setProperty('--rx', (.5 - (e.clientY - r.top) / r.height) * 26 + 'deg');
+}
+
+// 🐕 Mazlíček
+function petTarget(root, e){
+  const p = root.querySelector('.pet'); if (!p || !root._site) return;
+  const r = root._site.getBoundingClientRect(); p._tx = e.clientX - r.left + 16; p._ty = e.clientY - r.top + 10; p._last = performance.now();
+}
+function startPet(root){
+  const p = root.querySelector('.pet'); if (!p) return;
+  const sp = p.firstElementChild; p._x = 60; p._y = 140; p._tx = 80; p._ty = 160; p._last = 0; p._face = 1;
+  p.addEventListener('pointerdown', ev => {
+    ev.stopPropagation(); sp.classList.remove('hop'); void sp.offsetWidth; sp.classList.add('hop'); sfx('pop');
+    const h = document.createElement('span'); h.className = 'heart'; h.textContent = '❤️'; h.style.left = (p._x + 10) + 'px'; h.style.top = (p._y - 20) + 'px';
+    root._site.appendChild(h); setTimeout(() => h.remove(), 900);
+    if (!viewerMode && step === 4) mark('jsTry');
+  });
+  const f = t => {
+    if (!p.isConnected) return;
+    if (t - p._last > 2500 && Math.random() < .012){
+      const sr = root._site.getBoundingClientRect(), hr = root.host.getBoundingClientRect();
+      const visTop = Math.max(0, Math.max(hr.top, 0) - sr.top), visH = Math.min(innerHeight, hr.height || innerHeight);
+      p._tx = Math.random() * Math.max(60, root._site.clientWidth - 70) + 10; p._ty = visTop + Math.random() * Math.max(60, visH - 120) + 50;
+    }
+    const dx = p._tx - p._x, dy = p._ty - p._y; p._x += dx * .06; p._y += dy * .06;
+    if (Math.abs(dx) > 3) p._face = dx > 0 ? -1 : 1;
+    sp.style.transform = `scaleX(${p._face})`; p.style.transform = `translate(${p._x}px,${p._y}px)`;
+    requestAnimationFrame(f);
+  };
+  requestAnimationFrame(f);
+}
+
+// ✨ Slogan
+const SLOGANS = {
+  portfolio:['{n}: kreslím, fotím, tvořím. Občas i spím.','Design, který by schválila i babička. {n}','{n}: pixel-perfect od roku 2026'],
+  band:['{n}: hrajeme tak nahlas, že nás slyší i Litoměřice','Rock, který probudí sousedy. {n} 🎸','{n}: tři akordy a pravda'],
+  gaming:['{n}: hrajeme tak dobře, že se nás bojí i boti','Lag? To jsme ještě neznali. {n}','{n}: GG už od prvního kola'],
+  cafe:['{n}: káva tak silná, že naprogramuje web za tebe','Espresso, které tě nakopne. {n} ☕','{n}: tady se i Wi-Fi cítí jako doma'],
+  sport:['{n}: góly dáváme rychleji, než se načte tvůj web','Potíme se, abys ty nemusel. {n}','{n}: trénink, pot a slzy (radosti)'],
+  shop:['{n}: nakupuj, dokud peněženka nekřičí stop','Doprava zdarma, úsměv taky. {n}','{n}: věci, bez kterých nemůžeš žít']
+};
+let sloganI = 0;
+function slogan(){
+  const list = SLOGANS[S.type], n = S.name || T().name;
+  S.tag = list[(sloganI++ + Math.floor(Math.random() * list.length)) % list.length].replace('{n}', n);
+  const inp = $('#tagIn'); if (inp) inp.value = S.tag;
+  update(); mark('p2'); sfx('pop'); say('✨ Co ty na to? Klikni znovu pro další slogan.'); gainCap('slogan', 5, 3);
+}
+
+// 📸 Selfie do galerie
+function applySelfie(){
+  const c = $('#camC'), s = document.createElement('canvas'); s.width = 200; s.height = Math.round(200 * c.height / c.width);
+  s.getContext('2d').drawImage(c, 0, 0, s.width, s.height); selfie = s.toDataURL('image/jpeg', .72);
+  saveToGallery(); closeCam(); renderCtrl(); sfx('level'); gain(20); say('Jsi hvězda galerie! 🌟 Mrkni na TV.');
+}
+function av(x){ return x.p && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(x.p) ? `<img class="gav" src="${x.p}" alt="">` : ''; }
+let clearArm = 0;
+function clearG(){
+  const b = $('#gclear');
+  if (Date.now() - clearArm < 3000){ saveG([]); try { localStorage.removeItem(GKEY); } catch(e){} refreshG(); spotRoot.innerHTML = ''; spotRoot._site = null; $('#spotcap').textContent = 'Galerie je prázdná 👀'; b.textContent = '🗑️ Vymazat galerii'; clearArm = 0; return; }
+  clearArm = Date.now(); b.textContent = 'Opravdu? Klikni znovu'; setTimeout(() => { b.textContent = '🗑️ Vymazat galerii'; }, 3000);
+}
+
+// 🎓 Certifikát
+function certData(){ return {person: certName, lvl: lvlIdx(xp), b: [...badges], web: S.name || T().name}; }
+function renderCert(el, d){
+  el = el || $('#paper'); d = d || certData();
+  const today = new Date().toLocaleDateString('cs-CZ', {day:'numeric', month:'long', year:'numeric'});
+  el.innerHTML = `<div class="pin"><div class="seal">100 %<br>WEB<br>DEV</div>
+    <div class="ck">CERTIFIKÁT</div><div class="cs">o postavení vlastního webu</div>
+    <div class="cp">Tímto potvrzujeme, že</div>
+    <div class="cn ${d.person ? '' : 'empty'}">${esc(d.person || 'Tvoje jméno')}</div>
+    <div class="cp">úspěšně postavil/a web <b>„${esc(d.web)}“</b><br>a dosáhl/a úrovně <b>${LEVELS[d.lvl] ? LEVELS[d.lvl][1] : LEVELS[0][1]}</b></div>
+    <div class="cb">${d.b.map(k => BADGES[k] ? BADGES[k][0] : '').join(' ') || '⭐'}</div>
+    <div class="cft"><div><b>${today}</b><span>Datum</span></div><div><b>Bajtík 🤖</b><span>Hlavní robot</span></div><div><b>${CONFIG.school}</b><span>obor ${CONFIG.field}</span></div></div></div>`;
+  if (el.id === 'paper'){ const q = $('#qrcert'); if (q) q.innerHTML = qrSVG(certLink(), 130, 'L'); }
+}
+function certLink(){
+  const bk = Object.keys(BADGES), d = certData();
+  return viewerBase() + '#c-' + hex(d.person) + '-' + d.lvl + '-' + d.b.map(k => bk.indexOf(k).toString(36)).join('') + '-' + xp + '-' + enc(S);
+}
+function openCert(){ $('#cert').classList.add('on'); $('#certIn').value = certName; renderCert(); sfx('ding'); say('Napiš svoje jméno a certifikát je tvůj 🎓'); setTimeout(() => $('#certIn').focus(), 100); }
+function closeCert(){ $('#cert').classList.remove('on'); }
+function printCert(){ try { window.print(); } catch(e){} }
 
 /* ====== RENTGEN – tažení ====== */
 let dragging = false;
@@ -3698,8 +3938,17 @@ S = fresh();
 $('#badge').textContent = `💻 Obor ${CONFIG.field} · ${CONFIG.school}`;
 $('#vbadge').textContent = `🛠️ Postaveno na veletrhu · ${CONFIG.school} →`;
 $('#vbadge').href = CONFIG.qrUrl;
-addEventListener('hashchange', () => { if (location.hash === '#galerie') openGallery(); });
+addEventListener('hashchange', () => { if (location.hash === '#galerie') openGallery(); else if (/^#[wc]-/.test(location.hash)) location.reload(); });
 if (location.hash === '#galerie') openGallery();
+else if (location.hash.startsWith('#c-')){
+  try {
+    const parts = location.hash.slice(1).split('-'), bk = Object.keys(BADGES);
+    const web = parts.slice(5).join('-'), s = dec(web);
+    viewerMode = true; show('certview');
+    renderCert($('#paper2'), {person: unhex(parts[1] || ''), lvl: +parts[2] || 0, b: [...(parts[3] || '')].map(c => bk[parseInt(c, 36)]).filter(Boolean), web: s.name || TYPES[s.type].name});
+    $('#cvWeb').href = '#' + web;
+  } catch(e){ show('intro'); }
+}
 else if (location.hash.startsWith('#w-')){
   try {
     const s = dec(location.hash.slice(1));
