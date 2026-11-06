@@ -2677,6 +2677,7 @@ section.stage{padding:22px;display:flex;flex-direction:column;min-width:0;min-he
     <div class="progress" id="prog"></div>
     <div class="xp" id="xp"><span id="xpLvl">🐣 Nováček</span><div class="xpbar"><i id="xpFill"></i></div><b id="xpNum">0 XP</b></div>
     <button class="home" id="muteBtn" onclick="toggleMute()" title="Zvuk">🔊</button>
+    <button class="home" id="voiceBtn" onclick="nextVoice()" title="Přepnout hlas Bajtíka">🗣️</button>
     <div class="duelbar" id="duelbar"></div>
   </header>
   <main class="work">
@@ -3815,8 +3816,17 @@ function pickVoice(){
     // nejlepší dostupný český hlas: Premium/Enhanced (Mac), Natural/Online (Edge), Google (Chrome)
     const score = v => (/premium/i.test(v.name) ? 60 : 0) + (/natural|online/i.test(v.name) ? 55 : 0) + (/enhanced|vylepšen/i.test(v.name) ? 45 : 0) + (/google/i.test(v.name) ? 20 : 0);
     const vs = speechSynthesis.getVoices().filter(x => /^cs/i.test(x.lang)).sort((a, b) => score(b) - score(a));
-    csVoice = vs[0] || null;
+    let saved = ''; try { saved = localStorage.getItem('psw-voice') || ''; } catch(e){}
+    csVoice = vs.find(v => v.voiceURI === saved) || vs[0] || null;
   } catch(e){}
+}
+function nextVoice(){
+  let vs = []; try { vs = speechSynthesis.getVoices().filter(x => /^cs/i.test(x.lang)); } catch(e){}
+  if (!vs.length){ toast('🗣️ Žádný český hlas v tomhle prohlížeči'); return; }
+  const i = (vs.indexOf(csVoice) + 1) % vs.length; csVoice = vs[i];
+  try { localStorage.setItem('psw-voice', csVoice.voiceURI); } catch(e){}
+  toast(`🗣️ Hlas ${i + 1}/${vs.length}: ${csVoice.name}`);
+  const was = muted; muted = false; speak('Ahoj, já jsem Bajtík. Takhle teď mluvím.'); muted = was;
 }
 try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch(e){}
 function speak(t){
