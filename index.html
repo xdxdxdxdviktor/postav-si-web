@@ -3384,7 +3384,7 @@ $('#url').addEventListener('click', () => {
   if (hackClicks.length >= 5){ hackClicks = []; toggleHack(); }
 });
 addEventListener('keydown', e => {
-  if (!$('#builder').classList.contains('on')) return;
+  if (viewerMode) return;
   if ((e.metaKey || e.ctrlKey || e.altKey) && e.code === 'KeyH'){ e.preventDefault(); toggleHack(); }
 });
 function toggleHack(){ root._hack = !root._hack; if (root._hack){ matrix(); badge('hacker'); } update(); }
