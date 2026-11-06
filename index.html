@@ -2542,6 +2542,29 @@ input[type=range]{width:100%;accent-color:var(--acc);height:30px}
 .cbtns{display:flex;gap:10px}
 .cbtns button{flex:1}
 
+/* ---------- ZÁBAVA: XP, Bajtík, emoji ---------- */
+.xp{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 10px;white-space:nowrap;transition:.3s}
+.xp.up{border-color:#ffd200;box-shadow:0 0 0 5px rgba(255,210,0,.2);transform:scale(1.06)}
+.xp span{font-weight:800;font-size:14px}
+.xpbar{width:90px;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.xpbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#22c55e,#7dffb0);transition:width .5s}
+.xp b{font:700 13px 'JetBrains Mono',monospace;color:#7dffb0}
+.xpf{position:fixed;z-index:130;pointer-events:none;font:900 20px Inter,sans-serif;color:#7dffb0;text-shadow:0 2px 12px rgba(0,0,0,.7);animation:xpf 1.1s ease-out forwards;transform:translate(-50%,-50%)}
+@keyframes xpf{to{transform:translate(-50%,-110px) scale(1.2);opacity:0}}
+section.stage{position:relative}
+#bot{position:absolute;right:36px;bottom:36px;z-index:6;display:flex;align-items:flex-end;gap:10px;pointer-events:none}
+#botAva{pointer-events:auto;width:66px;height:66px;flex:none;border-radius:50%;border:2px solid var(--acc);background:radial-gradient(circle at 30% 30%,#2e3166,#111327);font-size:36px;line-height:1;animation:bob 2.6s ease-in-out infinite;box-shadow:0 12px 30px -6px rgba(124,92,255,.7)}
+@keyframes bob{50%{transform:translateY(-7px)}}
+#botMsg{max-width:310px;background:#fff;color:#151628;font-weight:600;font-size:15.5px;line-height:1.4;padding:12px 15px;border-radius:18px 18px 4px 18px;box-shadow:0 14px 40px rgba(0,0,0,.55);opacity:0;transform:translateY(10px) scale(.95);transform-origin:bottom right;transition:.25s}
+#bot.talk #botMsg{opacity:1;transform:none}
+#bot.talk #botAva{animation:talk .35s ease-in-out 4}
+@keyframes talk{50%{transform:rotate(-10deg) scale(1.08)}}
+.emo{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.emo button{aspect-ratio:1/1;border-radius:10px;border:2px solid var(--line);background:var(--panel);font-size:21px;padding:0;transition:.15s}
+.emo button:active{transform:scale(.9)}
+.emo button.sel{border-color:var(--acc);background:rgba(124,92,255,.2);transform:scale(1.08)}
+@media (max-width:1280px){.pstep .l{display:none}}
+
 /* ---------- PREVIEW ---------- */
 section.stage{padding:22px;display:flex;flex-direction:column;min-width:0;min-height:0}
 .browser{flex:1;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#0b0c16;box-shadow:0 40px 90px -30px rgba(0,0,0,.9),0 0 0 1px rgba(124,92,255,.08)}
@@ -2605,6 +2628,8 @@ section.stage{padding:22px;display:flex;flex-direction:column;min-width:0;min-he
   <header class="top">
     <button class="home" onclick="restart()" title="Začít znovu">⟲</button>
     <div class="progress" id="prog"></div>
+    <div class="xp" id="xp"><span id="xpLvl">🐣 Nováček</span><div class="xpbar"><i id="xpFill"></i></div><b id="xpNum">0 XP</b></div>
+    <button class="home" id="muteBtn" onclick="toggleMute()" title="Zvuk">🔊</button>
     <div class="duelbar" id="duelbar"></div>
   </header>
   <main class="work">
@@ -2627,6 +2652,7 @@ section.stage{padding:22px;display:flex;flex-direction:column;min-width:0;min-he
           <div id="xhandle"><div class="line"></div><div id="knob">🩻</div><div class="xlab">← RENTGEN →</div></div>
         </div>
       </div>
+      <div id="bot"><div id="botMsg"></div><button id="botAva" onclick="botJoke()" title="Bajtík">🤖</button></div>
     </section>
   </main>
 </div>
@@ -2769,6 +2795,7 @@ function tasksHTML(){
     t.map(x => `<div class="task ${done.has(x[0])?'ok':''}"><i>${done.has(x[0])?'✓':''}</i>${x[1]}</div>`).join('') + `</div>`;
 }
 function renderTasks(){
+  done.forEach(id => { if (!awarded.has(id)){ awarded.add(id); gain(15); sfx('ding'); } });
   if (['color','font','mode'].every(k => done.has(k))) badge('stylist');
   if (done.has('ux5')) badge('ux');
   if (done.has('xray')) badge('xray');
@@ -2804,7 +2831,7 @@ function buildHTML(s, clean){
   };
   const P = {
     nav: () => [`<nav${at('nav','')}>`, `  <div class="logo">${name}</div>`, `  <ul>`, ...t.menu.map(m => `    <li>${m}</li>`), `  </ul>`, ...(s.js.theme ? [`  <button class="theme-btn">🌙</button>`] : []), `</nav>`],
-    hero: () => [`<header${at('hero','hero')}>`, `  <div class="emoji">${t.e}</div>`, `  <h1>${name}</h1>`, `  <p>${tag}</p>`, `  <button class="btn">${btn}</button>`, ...(s.js.like ? [`  <button class="like">❤️ <span>0</span></button>`] : []), `</header>`],
+    hero: () => [`<header${at('hero','hero')}>`, `  <div class="emoji">${s.em || t.e}</div>`, `  <h1>${name}</h1>`, `  <p>${tag}</p>`, `  <button class="btn">${btn}</button>`, ...(s.js.like ? [`  <button class="like">❤️ <span>0</span></button>`] : []), `</header>`],
     about: () => [`<section${at('about','about')}>`, `  <h2>${t.ah}</h2>`, `  <div class="cards">`, ...t.about.map(a => `    <div class="card"><b>${a[0]} ${a[1]}</b><p>${a[2]}</p></div>`), `  </div>`, `</section>`],
     gallery: () => [`<section${at('gallery','gallery')}>`, `  <h2>Galerie</h2>`, `  <div class="tiles">`, ...t.gal.map(g => `    <div class="tile">${g}</div>`), `  </div>`, `</section>`],
     cta: () => [`<section${at('cta','cta')}>`, `  <h2>Líbí se ti to?</h2>`, `  <button class="btn">${btn}</button>`, `</section>`],
@@ -3067,6 +3094,7 @@ function renderCtrl(){
     h += ``;
     h += `<div class="g3">` + Object.entries(TYPES).map(([k,v]) => `<button class="opt ${S.type===k?'sel':''}" onclick="setType('${k}')"><span class="e">${v.e}</span>${v.l}</button>`).join('') + `</div>`;
     h += `<div><label class="lbl">Jak se bude jmenovat?</label><input class="txt" maxlength="30" value="${esc(S.name)}" placeholder="${esc(t.name)}" oninput="S.name=this.value;update();if(this.value)mark('name')"></div>`;
+    h += `<div><label class="lbl">Ikona webu</label><div class="emo">` + EMOJIS.map(e => `<button class="${(S.em || t.e) === e ? 'sel' : ''}" onclick="setEm('${e}')">${e}</button>`).join('') + `</div></div>`;
   }
   else if (step === 1){
     h += kick('Krok 2 z 5 · Rozložení', 'Poskládej si stránku');
@@ -3115,6 +3143,7 @@ function renderCtrl(){
   else {
     const code = buildHTML(S,true) + '\n' + buildCSS(S) + '\n' + buildJS(S);
     h += kick('🎉 Hotovo', 'Tvůj web je na světě!');
+    h += `<div class="analogy">🏆 Tvoje úroveň: <b>${LEVELS[lvlIdx(xp)][1]}</b> · ${xp} XP</div>`;
     h += `<p class="info">Prošel/a jsi stejné kroky jako skutečný webový vývojář: <b>nápad → wireframe → HTML → CSS → JavaScript</b>.</p>`;
     h += badgeBox();
     h += `<div class="stats"><div><b>${code.split('\n').length}</b><span>řádků kódu</span></div><div><b>${S.blocks.length}</b><span>bloků</span></div><div><b>${JKEYS.filter(k=>S.js[k]).length}</b><span>JS funkcí</span></div></div>`;
@@ -3137,7 +3166,8 @@ function renderProgress(){
 }
 
 /* ====== AKCE ====== */
-function setType(k){ S.type = k; done.add('type'); renderCtrl(); update(); }
+function setType(k){ S.type = k; done.add('type'); renderCtrl(); update(); sfx('pop'); say(BOT_TYPE[k]); }
+function setEm(e){ S.em = e; renderCtrl(); update(); flashBlock(S.blocks.indexOf('hero')); sfx('pop'); gainCap('emo', 5, 3); }
 function setK(k, v){ S[k] = v; done.add({pal:'color',font:'font',dark:'mode'}[k]); renderCtrl(); update(); }
 function delB(i){ if (S.blocks.length <= 1) return; S.blocks.splice(i, 1); renderCtrl(); update(); }
 function addB(k){
@@ -3145,9 +3175,9 @@ function addB(k){
   if (k === 'nav') S.blocks.unshift(k);
   else if (k !== 'footer' && S.blocks[S.blocks.length-1] === 'footer') S.blocks.splice(S.blocks.length-1, 0, k);
   else S.blocks.push(k);
-  done.add('addblk'); renderCtrl(); update(); flashBlock(S.blocks.indexOf(k)); checkWin(before);
+  done.add('addblk'); renderCtrl(); update(); flashBlock(S.blocks.indexOf(k)); checkWin(before); sfx('pop'); gainCap('blk', 10, 6);
 }
-function setV(b, j){ S.v[b] = j; done.add('variant'); renderCtrl(); update(); flashBlock(S.blocks.indexOf(b)); }
+function setV(b, j){ S.v[b] = j; done.add('variant'); sfx('pop'); gainCap('var', 5, 6); renderCtrl(); update(); flashBlock(S.blocks.indexOf(b)); }
 function flashBlock(i){
   const el = root.querySelector(`.block[data-i="${i}"]`); if (!el) return;
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
@@ -3174,7 +3204,7 @@ function uxBox(){
     ${ok === c.length ? `<div class="win">🏆 Perfektní UX! Takhle by to postavil profík.</div>` : ''}</div>`;
 }
 function checkWin(before){
-  if (uxScore() === 5) mark('ux5');
+  if (uxScore() === 5 && !done.has('ux5')){ mark('ux5'); say('Perfektní UX! Jsi rozený architekt 🏗️'); }
   if (uxScore() === 5 && before < 5){ const r = $('.ux').getBoundingClientRect(); confetti(r.left + r.width/2, r.top + 20, S, 100); }
 }
 
@@ -3243,7 +3273,7 @@ function endDrag(d){
   const before = uxScore();
   if (d.mode === 'add') S.blocks.splice(d.idx, 0, d.key);
   else { const [m] = S.blocks.splice(d.i, 1); S.blocks.splice(d.idx, 0, m); }
-  done.add('addblk'); renderCtrl(); update(); flashBlock(d.idx); checkWin(before);
+  done.add('addblk'); renderCtrl(); update(); flashBlock(d.idx); checkWin(before); sfx('pop'); gainCap('blk', 10, 6);
 }
 function toggleJS(k){
   S.js[k] = !S.js[k]; if (S.js[k]) done.add('jsOn'); if (JKEYS.filter(x => S.js[x]).length >= 3) badge('coder'); renderCtrl();
@@ -3279,6 +3309,8 @@ function go(n){
   step = n;
   if (n >= 2 && n <= 4) setX(55);
   if (n === 5) setX(85);
+  if (n > maxStep){ maxStep = n; gain(20); }
+  sfx('whoosh'); clearTimeout(botStepT); botStepT = setTimeout(() => say(BOT_STEP[n], 6000), 500);
   $('#tools').style.display = n >= 3 ? 'flex' : 'none';
   if (n < 3){ root._nocss = false; root._retro = false; }
   if (n === 5) saveToGallery();
@@ -3292,7 +3324,7 @@ function go(n){
 
 function show(id){ document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === id)); }
 function start(){ $('#duelbar').textContent = duel ? `⚔️ Hráč ${duel.p} · ${duel.theme}` : ''; $('#duelbar').classList.toggle('on', !!duel); start2(); }
-function start2(){ done = new Set(); badges = new Set(); sessionId = Math.random().toString(36).slice(2); root._nocss = root._retro = root._hack = false; setDev('desktop'); S = fresh(); likes = 0; root._flip = false; root._html = ''; show('builder'); go(0); poke(); }
+function start2(){ xp = 0; maxStep = 0; caps = {}; awarded = new Set(); renderXP(); done = new Set(); badges = new Set(); sessionId = Math.random().toString(36).slice(2); root._nocss = root._retro = root._hack = false; setDev('desktop'); S = fresh(); likes = 0; root._flip = false; root._html = ''; show('builder'); go(0); poke(); }
 function restart(){ duel = null; hideIdle(); clearTimeout(idleT); S = fresh(); likes = 0; root._flip = false; root._html = ''; step = 0; show('intro'); }
 function kiosk(){ try { document.documentElement.requestFullscreen?.().catch(() => {}); } catch(e){} }
 
@@ -3305,10 +3337,11 @@ function enc(s){
   const head = '' + TKEYS.indexOf(s.type) + s.pal + s.font + (s.dark ? 1 : 0) + String(s.r).padStart(2,'0') + js.toString(16)
              + VKEYS.map(k => s.v[k] || 0).join('') + s.blocks.map(k => BKEYS.indexOf(k)).join('');
   const pc = s.pal === 6 && s.pc ? s.pc.map(c => c.slice(1)).join('') : '';
-  return ['w', head, hex(s.name), hex(s.tag), hex(s.btn), pc].join('-');
+  const em = s.em && EMOJIS.includes(s.em) ? EMOJIS.indexOf(s.em).toString(36) : '';
+  return ['w', head, hex(s.name), hex(s.tag), hex(s.btn), pc, em].join('-');
 }
 function dec(h){
-  const [w, head, n, g, b, pc] = h.split('-');
+  const [w, head, n, g, b, pc, em] = h.split('-');
   if (w !== 'w' || !/^\d{6}[0-9a-f]\d{6,}$/.test(head || '')) throw new Error('bad');
   const s = fresh();
   s.type = TKEYS[+head[0]] || 'portfolio'; s.pal = PALETTES[+head[1]] ? +head[1] : 0;
@@ -3319,6 +3352,7 @@ function dec(h){
   s.blocks = [...head.slice(12)].map(c => BKEYS[+c]).filter((k, i, arr) => k && arr.indexOf(k) === i);
   if (!s.blocks.length) s.blocks = ['hero'];
   s.name = unhex(n || ''); s.tag = unhex(g || ''); s.btn = unhex(b || '');
+  if (em && EMOJIS[parseInt(em, 36)]) s.em = EMOJIS[parseInt(em, 36)];
   return s;
 }
 // Když stránka běží na vlastním hostingu (GitHub Pages, Vercel, Netlify…), QR vede sám na sebe.
@@ -3355,7 +3389,8 @@ const BADGES = {
 let badges = new Set(), toastT;
 function badge(k){
   if (viewerMode || badges.has(k) || !$('#builder').classList.contains('on')) return;
-  badges.add(k); toast(`🏅 Nový odznak: ${BADGES[k][0]} ${BADGES[k][1]}`);
+  badges.add(k); toast(`🏅 Nový odznak: ${BADGES[k][0]} ${BADGES[k][1]}`); sfx('badge'); gain(30);
+  if (BOT_BADGE[k]) setTimeout(() => say(BOT_BADGE[k]), 300);
 }
 function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 2600); }
 function badgeBox(){
@@ -3387,7 +3422,7 @@ addEventListener('keydown', e => {
   if (viewerMode) return;
   if ((e.metaKey || e.ctrlKey || e.altKey) && e.code === 'KeyH'){ e.preventDefault(); toggleHack(); }
 });
-function toggleHack(){ root._hack = !root._hack; if (root._hack){ matrix(); badge('hacker'); } update(); }
+function toggleHack(){ root._hack = !root._hack; if (root._hack){ matrix(); sfx('whoosh'); badge('hacker'); } update(); }
 function matrix(){
   const c = $('#matrix'), ctx = c.getContext('2d'); c.width = innerWidth; c.height = innerHeight;
   c.classList.add('on'); $('#hackmsg').classList.add('on');
@@ -3435,7 +3470,7 @@ let sessionId = null;
 function loadG(){ try { return JSON.parse(localStorage.getItem(GKEY) || '[]'); } catch(e){ return []; } }
 function saveG(a){ try { localStorage.setItem(GKEY, JSON.stringify(a.slice(-100))); } catch(e){} }
 function saveToGallery(){
-  const a = loadG(), e = {id: sessionId, c: enc(S), n: S.name || T().name, b: [...badges], u: uxScore(), t: Date.now()};
+  const a = loadG(), e = {id: sessionId, c: enc(S), n: S.name || T().name, b: [...badges], u: uxScore(), x: xp, t: Date.now()};
   const i = a.findIndex(x => x.id === sessionId); if (i > -1) a[i] = e; else a.push(e); saveG(a);
 }
 let gList = [], gIdx = -1, spotRoot = null, gRaf = 0, gOn = false;
@@ -3452,12 +3487,12 @@ function refreshG(){
   const today = new Date().toDateString();
   gList = loadG().filter(x => new Date(x.t).toDateString() === today).reverse();
   $('#gNum').textContent = gList.length;
-  const score = x => x.b.length * 10 + x.u;
+  const score = x => (x.x || 0) + x.b.length * 10 + x.u;
   const top = [...gList].sort((a, b) => score(b) - score(a) || a.t - b.t).slice(0, 6);
-  $('#lead').innerHTML = top.length ? top.map((x, i) => `<li><span class="m">${['🥇','🥈','🥉','4.','5.','6.'][i]}</span>${esc(x.n)}<small>${x.b.length} 🏅</small></li>`).join('')
+  $('#lead').innerHTML = top.length ? top.map((x, i) => `<li><span class="m">${['🥇','🥈','🥉','4.','5.','6.'][i]}</span>${esc(x.n)}<small>${x.x || 0} XP · ${x.b.length} 🏅</small></li>`).join('')
                                     : `<li style="color:var(--mut)">Zatím nikdo… buď první! 🚀</li>`;
   $('#gstrip').innerHTML = gList.slice(0, 14).map(x => { const s = decSafe(x.c); if (!s) return ''; const p = palOf(s);
-    return `<div class="gcard" style="background:linear-gradient(135deg,${p.a},${p.b})"><span class="e">${TYPES[s.type].e}</span>${esc(x.n)}</div>`; }).join('');
+    return `<div class="gcard" style="background:linear-gradient(135deg,${p.a},${p.b})"><span class="e">${s.em || TYPES[s.type].e}</span>${esc(x.n)}</div>`; }).join('');
 }
 function nextSpot(){
   if (!gList.length) return;
@@ -3561,6 +3596,82 @@ function applyCam(){
   S.pc = camCols; S.pal = 6; done.add('color'); badge('photo'); closeCam(); renderCtrl(); update();
   const r = $('#vp').getBoundingClientRect(); confetti(r.left + r.width/2, r.top + r.height/3, S, 100);
 }
+
+/* ====== ZÁBAVA: XP + levely, zvuky, Bajtík ====== */
+const EMOJIS = ['🎨','🎸','🎮','☕','⚽','🛍️','🚀','🦄','🐱','🍕','🔥','💎','🌈','👾','🎧','🦖'];
+const LEVELS = [[0,'🐣 Nováček'],[60,'🧑‍💻 Junior'],[150,'🚀 Medior'],[260,'🦾 Senior'],[380,'👑 Tech Lead'],[520,'🧙 Web Wizard']];
+let xp = 0, maxStep = 0, caps = {}, awarded = new Set(), lastX = innerWidth / 2, lastY = 80, lastAct = Date.now(), nudged = false, floatN = 0;
+function lvlIdx(x){ let i = 0; LEVELS.forEach((l, j) => { if (x >= l[0]) i = j; }); return i; }
+function renderXP(){
+  const i = lvlIdx(xp), cur = LEVELS[i][0], next = LEVELS[i+1];
+  $('#xpLvl').textContent = LEVELS[i][1]; $('#xpNum').textContent = xp + ' XP';
+  $('#xpFill').style.width = (next ? (xp - cur) / (next[0] - cur) * 100 : 100) + '%';
+}
+function gain(n){
+  if (viewerMode) return;
+  const before = lvlIdx(xp); xp += n; renderXP();
+  const f = document.createElement('div'); f.className = 'xpf'; f.textContent = '+' + n + ' XP';
+  f.style.left = (lastX + (floatN % 3) * 26 - 26) + 'px'; f.style.top = (lastY - 10 - (floatN % 3) * 22) + 'px'; floatN++;
+  document.body.appendChild(f); setTimeout(() => f.remove(), 1200);
+  if (lvlIdx(xp) > before){
+    const t = LEVELS[lvlIdx(xp)][1], el = $('#xp');
+    el.classList.add('up'); setTimeout(() => el.classList.remove('up'), 1200);
+    setTimeout(() => { sfx('level'); say(`Level up! 🎉 Teď jsi ${t}`); const r = el.getBoundingClientRect(); confetti(r.left + r.width/2, r.bottom, S, 60); }, 350);
+  }
+}
+function gainCap(k, n, cap){ caps[k] = (caps[k] || 0) + 1; if (caps[k] <= cap) gain(n); }
+
+let AC = null, muted = false;
+try { muted = localStorage.getItem('psw-mute') === '1'; } catch(e){}
+function ac(){ if (!AC){ try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} } if (AC && AC.state === 'suspended') AC.resume(); return AC; }
+function tone(f, t0, d, type = 'sine', vol = .12, f2){
+  const a = ac(); if (!a) return; const t = a.currentTime + t0, o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + d + .03);
+}
+const SFX = {
+  click: () => tone(900, 0, .04, 'triangle', .035),
+  pop: () => tone(480, 0, .13, 'sine', .16, 1000),
+  ding: () => { tone(880, 0, .16, 'sine', .11); tone(1320, .08, .28, 'sine', .09); },
+  badge: () => { tone(784, 0, .13, 'triangle', .12); tone(1175, .1, .35, 'triangle', .12); },
+  level: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, i * .09, .25, 'triangle', .13)),
+  whoosh: () => tone(260, 0, .28, 'sawtooth', .025, 900),
+  blip: () => tone(1200, 0, .05, 'square', .025, 1500)
+};
+function sfx(k){ if (muted || viewerMode) return; try { SFX[k] && SFX[k](); } catch(e){} }
+function toggleMute(){ muted = !muted; try { localStorage.setItem('psw-mute', muted ? '1' : '0'); } catch(e){} $('#muteBtn').textContent = muted ? '🔇' : '🔊'; if (!muted) sfx('ding'); }
+$('#muteBtn').textContent = muted ? '🔇' : '🔊';
+document.addEventListener('pointerdown', e => {
+  lastX = e.clientX; lastY = e.clientY; lastAct = Date.now(); nudged = false;
+  if (e.target.closest && e.target.closest('button,.pt')) sfx('click');
+}, true);
+
+const BOT_STEP = [
+  'Ahoj! Já jsem Bajtík 🤖 Pomůžu ti postavit web. Vyber vlevo, o čem bude!',
+  'Teď kreslíme plánek 📐 Zkus přetáhnout blok rovnou do náhledu!',
+  'Psst… to modré kolečko 🩻 ukáže, co je pod pokličkou. Táhni ho!',
+  'Módní přehlídka! 🎨 Zkus i 📸 barvy z oblečení nebo 🎲 Překvap mě.',
+  'Teď to oživíme ⚡ Zapni něco a klikni na to v náhledu!',
+  'WOW! 🎉 Tohle je fakt dobrej web. Naskenuj si ho do mobilu 📱'
+];
+const BOT_TYPE = {portfolio:'🎨 Umělec! To se mi líbí.', band:'🎸 Rock’n’roll! Už si vás pouštím.', gaming:'🎮 GG! Tohle bude epické.', cafe:'☕ Mmm… dám si flat white.', sport:'⚽ Góóól! Jdeme na to.', shop:'🛍️ Byznys je byznys! 💰'};
+const BOT_BADGE = {nocss:'Aaaa! Kde jsou moje šaty?! 😱', retro:'Rok 1998… tehdy jsem byl jen kalkulačka 🧮', hacker:'Jsi v systému… 😎 Nikomu to neříkej.', photo:'Sluší ti to! Web ladí s tvým outfitem 👕', mobile:'Na mobilu to vypadá skvěle 📱', xray:'Tak takhle vypadá web zevnitř 🤓'};
+const BOT_NUDGE = ['Ťukni vlevo na jeden z typů webu 👈', 'Ťukni na blok ve Stavebnici, třeba 🧭 Menu!', 'Přepiš nadpis v kódu vlevo a sleduj náhled ✍️', 'Zmáčkni 🎲 Překvap mě, to je zábava!', 'Zapni 🎉 Konfety a klikni na tlačítko v náhledu!', 'Naskenuj QR kód a máš web v mobilu 📱'];
+const JOKES = ['Proč programátoři nosí brýle? Protože nevidí C# 🤓', 'Kolik programátorů je potřeba na výměnu žárovky? Žádný, to je hardware 💡', 'Mám rád cookies 🍪 Ty webové i ty k jídlu.', 'Moje oblíbená hudba? Algo-rytmy 🎵', 'Chyba 404: vtip nenalezen 🙃', 'Proč se HTML a CSS nehádají? Protože mají dobrý styl 💅', 'Já nespím. Jen čekám na tvůj klik 😴🖱️'];
+let botT = 0, botStepT = 0, jokeI = Math.floor(Math.random() * 7);
+function say(t, ms = 4800){
+  if (!t || !$('#builder').classList.contains('on')) return;
+  const b = $('#bot'); $('#botMsg').textContent = t; b.classList.remove('talk'); void b.offsetWidth; b.classList.add('talk');
+  sfx('blip'); clearTimeout(botT); botT = setTimeout(() => b.classList.remove('talk'), ms);
+}
+function botJoke(){ say(JOKES[jokeI++ % JOKES.length], 6000); gainCap('joke', 5, 2); }
+setInterval(() => {
+  if (!$('#builder').classList.contains('on') || nudged || Date.now() - lastAct < 18000) return;
+  nudged = true; say(BOT_NUDGE[step], 6000);
+}, 3000);
+const _markName = mark;
+mark = function(id){ const fresh = !done.has(id); _markName(id); if (fresh && id === 'name') setTimeout(() => { if (S.name) say(`„${S.name}“? To zní jako značka, co bude slavná! ⭐`); }, 1400); };
 
 /* ====== RENTGEN – tažení ====== */
 let dragging = false;
