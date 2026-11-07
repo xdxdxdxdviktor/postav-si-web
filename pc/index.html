@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postav si PC – IT Herna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/common.css">
+<style>
+:root{--acc:#ff5e62;--acc2:#ff9966}
+body::before{background:radial-gradient(60vw 60vw at 5% -10%,rgba(255,94,98,.14),transparent 60%),radial-gradient(50vw 50vw at 105% 110%,rgba(255,153,102,.12),transparent 60%)}
+.wrap{max-width:1320px;margin:0 auto;padding:22px;display:grid;grid-template-columns:430px 1fr;gap:22px;align-items:start}
+.budget{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:14px}
+.bh{display:flex;justify-content:space-between;align-items:baseline;font-weight:800}
+.bh b{font-size:24px}
+.bbar{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:8px}
+.bbar i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#ffd200);transition:width .4s,background .3s}
+.bsel{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.bsel button{padding:7px 11px;border-radius:10px;border:2px solid var(--line);background:var(--panel2);font-weight:700;font-size:13px}
+.bsel button.sel{border-color:var(--acc)}
+.case{position:relative;border-radius:24px;background:linear-gradient(160deg,#1a1c2c,#0c0d17);border:2px solid #2a2e45;padding:18px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto auto;gap:12px;box-shadow:0 30px 70px -30px rgba(0,0,0,.9);overflow:hidden}
+.case.on{border-color:transparent;box-shadow:0 0 0 3px #ff00d4,0 0 50px rgba(0,212,255,.45),0 30px 70px -30px rgba(0,0,0,.9);animation:rgb 3s linear infinite}
+@keyframes rgb{0%{box-shadow:0 0 0 3px #ff00d4,0 0 50px rgba(255,0,212,.45)}33%{box-shadow:0 0 0 3px #00d4ff,0 0 50px rgba(0,212,255,.45)}66%{box-shadow:0 0 0 3px #22c55e,0 0 50px rgba(34,197,94,.45)}100%{box-shadow:0 0 0 3px #ff00d4,0 0 50px rgba(255,0,212,.45)}}
+.slot{border:2px dashed #3a3f5c;border-radius:16px;padding:12px;min-height:84px;display:flex;flex-direction:column;justify-content:center;gap:4px;transition:.2s;cursor:pointer}
+.slot .sl{font:700 11px 'JetBrains Mono',monospace;color:var(--mut);letter-spacing:.1em;text-transform:uppercase}
+.slot .sv{font-weight:800;font-size:15px}
+.slot .se{font-size:26px}
+.slot.full{border-style:solid;border-color:var(--acc);background:rgba(255,94,98,.08);animation:hin .3s}
+.slot.drop{border-color:#ffd200;background:rgba(255,210,0,.1)}
+.slot.cur{box-shadow:0 0 0 3px rgba(255,153,102,.3)}
+.s-cpu{grid-column:1}.s-ram{grid-column:2}.s-gpu{grid-column:1/3}.s-ssd{grid-column:1}.s-psu{grid-column:2}
+.fans{grid-column:1/3;display:flex;justify-content:space-around}
+.fan{width:58px;height:58px;border-radius:50%;border:3px solid #2a2e45;background:repeating-conic-gradient(#3a3f5c 0 30deg,#1a1c2c 30deg 60deg)}
+.case.on .fan{animation:spin .35s linear infinite;border-color:#00d4ff}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cats button{padding:11px 15px;border-radius:12px;border:2px solid var(--line);background:var(--panel);font-weight:800;font-size:15px}
+.cats button.sel{border-color:var(--acc);background:rgba(255,94,98,.12)}
+.cats button.ok::after{content:' ✓';color:var(--ok)}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.opt{text-align:left;padding:14px;border-radius:16px;border:2px solid var(--line);background:var(--panel);display:flex;flex-direction:column;gap:6px;transition:.15s;animation:hin .3s both}
+.opt:hover{border-color:#5a5f80;transform:translateY(-2px)}
+.opt.sel{border-color:var(--acc);background:rgba(255,94,98,.1)}
+.opt .oh{display:flex;align-items:center;gap:10px}
+.opt .oe{font-size:30px}
+.opt b{font-size:16px}
+.opt .od{font-size:13.5px;color:var(--mut);line-height:1.4}
+.opt .of{display:flex;justify-content:space-between;font:700 13px 'JetBrains Mono',monospace}
+.opt .price{color:#ffd200}
+.opt .pw{color:var(--mut)}
+.stat{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--mut)}
+.stat i{display:block;height:6px;border-radius:9px;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.boot{margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.warn{padding:12px 14px;border-radius:12px;font-weight:700;background:rgba(255,94,98,.12);border:1px solid rgba(255,94,98,.5)}
+.bench{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.game{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.game .gh{display:flex;justify-content:space-between;align-items:baseline;font-weight:800;font-size:17px}
+.game .fps{font:900 30px 'JetBrains Mono',monospace}
+.game .gb{height:14px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:8px}
+.game .gb i{display:block;height:100%;width:0;transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+.game small{color:var(--mut);font-weight:700}
+.lead{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.lead li{display:flex;gap:10px;padding:10px 12px;border-radius:12px;background:var(--panel2);font-weight:700}
+.lead li small{margin-left:auto;color:var(--mut)}
+@media (max-width:980px){.wrap{grid-template-columns:1fr}.opts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <div class="budget">
+      <div class="bh"><span>💰 Rozpočet</span><b id="spent">0 Kč</b></div>
+      <div class="bbar"><i id="bb"></i></div>
+      <div class="bsel" id="bsel"></div>
+    </div>
+    <div class="case" id="case"></div>
+    <div class="boot"><button class="btn-p" id="bootBtn" onclick="boot()" style="font-size:20px;flex:1">⚡ Zapnout PC a změřit FPS</button><button class="btn-s" onclick="reset()">↺</button></div>
+    <div id="bootMsg" style="margin-top:12px"></div>
+  </div>
+  <div>
+    <div class="kicker">Krok 1 · vyber komponenty</div>
+    <h2 style="margin:6px 0 4px;font-size:30px;letter-spacing:-.02em">Postav herní počítač 🖥️</h2>
+    <p class="info" style="margin:0 0 14px">Ťukni na součástku (nebo ji přetáhni do skříně). Vejdi se do rozpočtu a hlídej, aby <b>zdroj utáhl</b> procesor i grafiku. Ceny jsou orientační.</p>
+    <div class="cats" id="cats"></div>
+    <div class="opts" id="opts"></div>
+    <div class="bench" id="bench"></div>
+  </div>
+</div>
+
+<script src="../shared/common.js"></script>
+<script>
+const H = Herna, $ = H.$;
+H.init({emoji:'🖥️', title:'Postav si PC'});
+
+const BASE = 3000; // skříň + základní deska + chlazení
+const CATS = {
+  cpu:{l:'Procesor', e:'🧠', slot:'CPU', tip:'Mozek počítače. Počítá logiku hry, fyziku a AI postav.', o:[
+    {n:'Intel Core i3', d:'4 jádra – na školu a lehké hry', p:2500, w:60, s:40},
+    {n:'AMD Ryzen 5', d:'6 jader – zlatá střední cesta', p:4500, w:65, s:65},
+    {n:'Intel Core i7', d:'12 jader – rychlý na hry i střih videa', p:8500, w:125, s:85},
+    {n:'AMD Ryzen 9', d:'16 jader – monstrum pro profíky', p:14000, w:170, s:100}]},
+  gpu:{l:'Grafika', e:'🎮', slot:'GPU', tip:'Kreslí obraz. Pro hry je ze všeho nejdůležitější.', o:[
+    {n:'Integrovaná', d:'Grafika v procesoru – zdarma, ale slabá', p:0, w:0, s:10},
+    {n:'GTX 1650', d:'Starší levná karta na esport hry', p:4000, w:75, s:35},
+    {n:'RTX 5060', d:'Moderní karta pro většinu her', p:8500, w:145, s:62},
+    {n:'RTX 5070', d:'Silná karta na náročné hry', p:15000, w:250, s:82},
+    {n:'RTX 5090', d:'Nejvýkonnější karta na trhu', p:55000, w:575, s:100}]},
+  ram:{l:'Paměť RAM', e:'⚡', slot:'RAM', tip:'Krátkodobá paměť. Když jí je málo, hra se zasekává.', o:[
+    {n:'8 GB', d:'Na hry už málo', p:600, w:5, s:.72},
+    {n:'16 GB', d:'Dnešní standard', p:1200, w:6, s:.95},
+    {n:'32 GB', d:'S rezervou na roky', p:2400, w:8, s:1},
+    {n:'64 GB', d:'Na střih videa a 3D', p:5000, w:10, s:1}]},
+  ssd:{l:'Úložiště', e:'💾', slot:'Disk', tip:'Dlouhodobá paměť. Rychlý disk = rychlé načítání.', o:[
+    {n:'HDD 1 TB', d:'Klasický točící se disk – pomalý', p:1000, w:8, s:45},
+    {n:'SSD 500 GB', d:'Rychlý, ale malý', p:900, w:4, s:16},
+    {n:'NVMe 1 TB', d:'Super rychlý a dost místa', p:1800, w:5, s:8},
+    {n:'NVMe 2 TB', d:'Rychlý a obrovský', p:3500, w:6, s:7}]},
+  psu:{l:'Zdroj', e:'🔌', slot:'Zdroj', tip:'Napájí všechno. Slabý zdroj = počítač nenaběhne!', o:[
+    {n:'400 W', d:'Na slabší sestavy', p:1000, w:400, s:0},
+    {n:'650 W', d:'Na většinu herních PC', p:1800, w:650, s:0},
+    {n:'850 W', d:'Na silné grafiky', p:3000, w:850, s:0},
+    {n:'1200 W', d:'Na úplná monstra', p:5500, w:1200, s:0}]}
+};
+const KEYS = Object.keys(CATS);
+let pick = {}, cat = 'cpu', budget = 25000, booted = false;
+
+function spent(){ return BASE + KEYS.reduce((a, k) => a + (pick[k] != null ? CATS[k].o[pick[k]].p : 0), 0); }
+function draw(){ return 80 + ['cpu', 'gpu', 'ram', 'ssd'].reduce((a, k) => a + (pick[k] != null ? CATS[k].o[pick[k]].w : 0), 0); }
+const kc = n => n.toLocaleString('cs-CZ') + ' Kč';
+
+function renderBudget(){
+  const s = spent(), over = budget && s > budget;
+  $('#spent').innerHTML = `${kc(s)} <span style="font-size:15px;color:var(--mut)">/ ${budget ? kc(budget) : '∞'}</span>`;
+  $('#bb').style.width = (budget ? Math.min(100, s / budget * 100) : 30) + '%';
+  $('#bb').style.background = over ? 'var(--bad)' : 'linear-gradient(90deg,#22c55e,#ffd200)';
+  $('#bsel').innerHTML = [15000, 25000, 40000, 0].map(b => `<button class="${budget === b ? 'sel' : ''}" onclick="budget=${b};renderAll()">${b ? (b / 1000) + ' tis.' : 'Bez limitu'}</button>`).join('') + `<span style="font-size:12px;color:var(--mut);align-self:center">(skříň + deska ${kc(BASE)} v ceně)</span>`;
+}
+function renderCase(){
+  const slot = k => { const c = CATS[k], o = pick[k] != null ? c.o[pick[k]] : null;
+    return `<div class="slot s-${k} ${o ? 'full' : ''} ${cat === k ? 'cur' : ''}" data-k="${k}" onclick="cat='${k}';renderAll()" ondragover="event.preventDefault();this.classList.add('drop')" ondragleave="this.classList.remove('drop')" ondrop="dropOn(event,'${k}')">
+      <span class="sl">${c.slot}</span>${o ? `<span class="sv"><span class="se">${c.e}</span> ${o.n}</span>` : `<span class="sv" style="color:var(--mut)">prázdné</span>`}</div>`; };
+  $('#case').innerHTML = slot('cpu') + slot('ram') + slot('gpu') + slot('ssd') + slot('psu') + `<div class="fans"><div class="fan"></div><div class="fan"></div><div class="fan"></div></div>`;
+  $('#case').classList.toggle('on', booted);
+}
+function renderCats(){ $('#cats').innerHTML = KEYS.map(k => `<button class="${k === cat ? 'sel' : ''} ${pick[k] != null ? 'ok' : ''}" onclick="cat='${k}';renderAll()">${CATS[k].e} ${CATS[k].l}</button>`).join(''); }
+function renderOpts(){
+  const c = CATS[cat], maxS = Math.max(...c.o.map(o => o.s));
+  $('#opts').innerHTML = `<div class="tip" style="grid-column:1/-1">${c.e} <b>${c.l}:</b> ${c.tip}</div>` + c.o.map((o, i) => `
+    <button class="opt ${pick[cat] === i ? 'sel' : ''}" draggable="true" ondragstart="event.dataTransfer.setData('text','${cat}:${i}')" onclick="choose('${cat}',${i})" style="animation-delay:${i * .04}s">
+      <div class="oh"><span class="oe">${c.e}</span><b>${o.n}</b></div>
+      <div class="od">${o.d}</div>
+      ${cat === 'psu' ? '' : `<div class="stat">${cat === 'ssd' ? 'Rychlost' : 'Výkon'} <i style="width:${cat === 'ssd' ? (1 - o.s / 50) * 120 + 10 : o.s / maxS * 130}px"></i></div>`}
+      <div class="of"><span class="price">${o.p ? kc(o.p) : 'zdarma'}</span><span class="pw">${cat === 'psu' ? 'dodá ' + o.w + ' W' : o.w ? 'bere ' + o.w + ' W' : ''}</span></div>
+    </button>`).join('');
+}
+function renderAll(){ renderBudget(); renderCase(); renderCats(); renderOpts(); }
+function choose(k, i){
+  pick[k] = i; booted = false; H.sfx('pop'); $('#bench').innerHTML = ''; $('#bootMsg').innerHTML = '';
+  const next = KEYS.find(x => pick[x] == null); if (next) cat = next;
+  renderAll();
+}
+function dropOn(e, k){ e.preventDefault(); const [c, i] = e.dataTransfer.getData('text').split(':'); document.querySelectorAll('.drop').forEach(x => x.classList.remove('drop')); if (c === k) choose(k, +i); else H.toast(`Tahle součástka do slotu ${CATS[k].slot} nepatří 🙃`); }
+function reset(){ pick = {}; cat = 'cpu'; booted = false; $('#bench').innerHTML = ''; $('#bootMsg').innerHTML = ''; renderAll(); }
+
+const GAMES = [
+  {n:'⛏️ Minecraft', cw:.6, gw:.4, base:420},
+  {n:'🏝️ Fortnite', cw:.35, gw:.65, base:260},
+  {n:'🌃 Cyberpunk 2077', cw:.2, gw:.8, base:150}
+];
+const rate = f => f < 30 ? ['😵 Trhá se', 'var(--bad)'] : f < 60 ? ['🙂 Hratelné', 'var(--warn)'] : f < 144 ? ['😎 Plynulé', 'var(--ok)'] : ['🚀 Esport level', '#00d4ff'];
+async function boot(){
+  const miss = KEYS.filter(k => pick[k] == null);
+  if (miss.length){ H.sfx('bad'); $('#bootMsg').innerHTML = `<div class="warn">🧩 Chybí ti: ${miss.map(k => CATS[k].e + ' ' + CATS[k].l).join(', ')}</div>`; cat = miss[0]; renderAll(); return; }
+  if (budget && spent() > budget){ H.sfx('bad'); $('#bootMsg').innerHTML = `<div class="warn">💸 Přetáhl jsi rozpočet o ${kc(spent() - budget)}. Vyber něco levnějšího.</div>`; return; }
+  const need = Math.ceil(draw() * 1.2), psu = CATS.psu.o[pick.psu].w;
+  if (psu < need){ H.sfx('bad'); H.speak('Ups, zdroj to neutáhl!'); $('#case').animate([{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'translateX(0)'}], {duration:300, iterations:2});
+    $('#bootMsg').innerHTML = `<div class="warn">💥 Bzzzt! Počítač se vypnul. Komponenty berou asi <b>${draw()} W</b> a se 20% rezervou potřebuješ zdroj aspoň <b>${need} W</b>. Tvůj má jen ${psu} W.</div>`; return; }
+  booted = true; renderCase(); H.sfx('win'); $('#bootMsg').innerHTML = `<div class="tip">✅ Počítač naběhl! Spotřeba ~${draw()} W, zdroj ${psu} W. Měřím FPS…</div>`;
+  const cpu = CATS.cpu.o[pick.cpu].s, gpu = CATS.gpu.o[pick.gpu].s, ram = CATS.ram.o[pick.ram].s, load = CATS.ssd.o[pick.ssd].s;
+  const res = GAMES.map(g => Math.round(g.base * (g.cw * cpu + g.gw * gpu) / 100 * ram));
+  const total = res.reduce((a, b) => a + b, 0);
+  $('#bench').innerHTML = `<div class="kicker">Krok 2 · benchmark</div>` + GAMES.map((g, i) => `<div class="game"><div class="gh"><span>${g.n}</span><span class="fps" id="f${i}">0</span></div><div class="gb"><i id="g${i}"></i></div><small id="r${i}">měřím…</small></div>`).join('')
+    + `<div class="game"><div class="gh"><span>⏳ Načtení hry</span><span class="fps">${load} s</span></div><small>${load > 30 ? '🐌 Pomalý HDD, dej si mezitím svačinu' : load > 10 ? '🙂 Docela svižné' : '⚡ Bleskové, díky NVMe disku'}</small></div>
+      <div class="panel"><div class="lbl">Zapiš sestavu do žebříčku (${total} FPS celkem)</div><div style="display:flex;gap:10px"><input class="txt" id="nm" maxlength="16" placeholder="Tvoje přezdívka"><button class="btn-p" onclick="saveLead(${total})">Uložit</button></div></div>
+      <div class="panel"><div class="lbl">🏆 Nejrychlejší sestavy dne</div><ol class="lead" id="ld"></ol></div>`;
+  showLead();
+  for (let i = 0; i < GAMES.length; i++){
+    await new Promise(r => setTimeout(r, 350));
+    const f = res[i], [t, col] = rate(f), el = $('#f' + i);
+    $('#g' + i).style.width = Math.min(100, f / 240 * 100) + '%'; $('#g' + i).style.background = col;
+    const t1 = performance.now();
+    await new Promise(r => { const st = () => { const k = Math.min(1, (performance.now() - t1) / 1200); el.textContent = Math.round(f * k); if (k < 1) requestAnimationFrame(st); else r(); }; st(); });
+    $('#r' + i).innerHTML = `<span style="color:${col}">${t}</span>`; H.tone(500 + i * 200, 0, .1, 'triangle', .08);
+  }
+  H.speak(`Hotovo! Ve Fortnite máš ${res[1]} snímků za sekundu.`);
+  if (res[2] >= 60) H.confetti(innerWidth / 2, innerHeight / 3, 120);
+}
+function lead(){ try { const d = new Date().toDateString(); return JSON.parse(localStorage.getItem('herna-pc') || '[]').filter(x => new Date(x.t).toDateString() === d); } catch(e){ return []; } }
+function saveLead(total){
+  const n = $('#nm').value.trim() || 'Anonym', parts = `${CATS.cpu.o[pick.cpu].n} + ${CATS.gpu.o[pick.gpu].n}`;
+  try { const a = JSON.parse(localStorage.getItem('herna-pc') || '[]'); a.push({n, f: total, p: parts, c: spent(), t: Date.now()}); localStorage.setItem('herna-pc', JSON.stringify(a.slice(-200))); } catch(e){}
+  H.sfx('ding'); $('#nm').disabled = true; showLead();
+}
+function showLead(){
+  const a = lead().sort((x, y) => y.f - x.f).slice(0, 8);
+  $('#ld').innerHTML = a.length ? a.map((x, i) => `<li>${['🥇','🥈','🥉'][i] || (i + 1) + '.'} ${H.esc(x.n)}<small>${x.f} FPS · ${H.esc(x.p)} · ${kc(x.c)}</small></li>`).join('') : '<li style="color:var(--mut)">Zatím nikdo, buď první!</li>';
+}
+renderAll();
+H.speak('Ahoj! Postav si herní počítač za daný rozpočet.');
+</script>
+</body>
+</html>

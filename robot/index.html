@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naprogramuj robota – IT Herna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/common.css">
+<style>
+:root{--acc:#ffb020;--acc2:#ff6a00}
+body::before{background:radial-gradient(60vw 60vw at 5% -10%,rgba(255,176,32,.14),transparent 60%),radial-gradient(50vw 50vw at 105% 110%,rgba(255,106,0,.12),transparent 60%)}
+.wrap{max-width:1300px;margin:0 auto;padding:22px;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start}
+.lv{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.lv button{min-width:54px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--panel);font-weight:800;font-size:15px}
+.lv button.cur{border-color:var(--acc);background:rgba(255,176,32,.15)}
+.lv button:disabled{opacity:.35;cursor:default}
+.lv button small{display:block;font-size:11px;color:var(--warn)}
+.board{position:relative;display:grid;grid-template-columns:repeat(7,var(--cs));grid-template-rows:repeat(7,var(--cs));gap:4px;padding:10px;border-radius:22px;background:#0b0c16;border:1px solid var(--line);--cs:min(9.2vh,74px);box-shadow:0 30px 70px -30px rgba(0,0,0,.9)}
+.cell{border-radius:10px;background:#171a2c;display:grid;place-items:center;font-size:calc(var(--cs)*.55)}
+.cell.w{background:linear-gradient(145deg,#3a2a20,#2a1d16);box-shadow:inset 0 -4px 0 rgba(0,0,0,.35)}
+.cell.w::after{content:'🧱';font-size:calc(var(--cs)*.5)}
+.cell.trail{background:#2b2440}
+.cell.g{animation:glow 1.4s ease-in-out infinite}
+@keyframes glow{50%{background:#3a3010}}
+.bot{position:absolute;left:0;top:0;width:var(--cs);height:var(--cs);display:grid;place-items:center;transition:transform .28s cubic-bezier(.3,.7,.4,1);z-index:2;pointer-events:none}
+.bot span{font-size:calc(var(--cs)*.62);transition:transform .28s;display:block}
+.bot i{position:absolute;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:14px solid var(--acc);top:-4px;left:50%;margin-left:-9px;transform-origin:50% calc(var(--cs)/2 + 4px);transition:transform .28s}
+.bot.crash span{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-7px) rotate(-8deg)}40%,80%{transform:translateX(7px) rotate(8deg)}}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.goalt h2{margin:4px 0 4px;font-size:30px;letter-spacing:-.02em}
+.pal{display:flex;gap:10px;flex-wrap:wrap}
+.pal button{padding:14px 18px;border-radius:14px;border:0;font-weight:800;font-size:17px;color:#1a1305;background:linear-gradient(135deg,#ffd26a,#ffb020);box-shadow:0 6px 0 #b36b00;transition:transform .08s}
+.pal button:active{transform:translateY(4px);box-shadow:0 2px 0 #b36b00}
+.pal button.t{background:linear-gradient(135deg,#9ad7ff,#4fb6ff);box-shadow:0 6px 0 #1f6fae}
+.prog{min-height:96px;display:flex;flex-wrap:wrap;gap:10px;align-content:flex-start;padding:14px;border-radius:18px;border:2px dashed #3a3f5c;background:rgba(255,255,255,.02)}
+.prog .empty{color:var(--mut);font-size:15px;align-self:center}
+.blk{position:relative;display:flex;align-items:center;gap:6px;padding:12px 14px;border-radius:12px;font-weight:800;font-size:16px;color:#1a1305;background:linear-gradient(135deg,#ffd26a,#ffb020);box-shadow:0 4px 0 #b36b00;cursor:pointer;animation:hin .2s;user-select:none}
+.blk.t{background:linear-gradient(135deg,#9ad7ff,#4fb6ff);box-shadow:0 4px 0 #1f6fae}
+.blk.run{outline:4px solid #fff;outline-offset:2px}
+.blk .x{display:inline-grid;place-items:center;min-width:34px;height:28px;padding:0 6px;border-radius:8px;background:rgba(0,0,0,.25);color:#fff;font-size:14px}
+.blk .del{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#e11d48;color:#fff;font-size:12px;display:grid;place-items:center}
+.loop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700}
+.loop button{padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--panel);font-weight:800}
+.loop button.sel{border-color:#4fb6ff;background:rgba(79,182,255,.15)}
+.runrow{display:flex;gap:10px}
+.code{background:#0b0c16;border:1px solid var(--line);border-radius:14px;padding:14px 16px;font:14px/1.6 'JetBrains Mono',monospace;color:#c9cdf0;white-space:pre;overflow:auto;max-height:220px}
+.code .kw{color:#bd93f9}.code .fn{color:#ffb020}.code .nm{color:#8be9fd}.code .cm{color:#6c76a8}
+.msg{padding:14px 16px;border-radius:14px;font-weight:700;font-size:16px;line-height:1.45;display:none}
+.msg.on{display:block;animation:hin .3s}
+.msg.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.5)}
+.msg.no{background:rgba(255,94,98,.12);border:1px solid rgba(255,94,98,.5)}
+.stars{font-size:34px;letter-spacing:4px}
+.lead{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.lead li{display:flex;gap:10px;padding:10px 12px;border-radius:12px;background:var(--panel2);font-weight:700}
+.lead li small{margin-left:auto;color:var(--mut)}
+@media (max-width:980px){.wrap{grid-template-columns:1fr}.board{--cs:min(11vw,64px);margin:0 auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <div class="lv" id="lv"></div>
+    <div class="board" id="board"></div>
+    <div class="timer mono" id="timer" style="margin-top:10px;color:var(--mut);font-weight:700;text-align:center">⏱ 0:00</div>
+  </div>
+  <div class="side" id="side"></div>
+</div>
+
+<script src="../shared/common.js"></script>
+<script>
+const H = Herna, $ = H.$;
+H.init({emoji:'🧩', title:'Naprogramuj robota'});
+
+// > v < ^ = start a směr, G = cíl, # = zeď
+const LEVELS = [
+  {t:'Rovně za baterkou', d:'Robot potřebuje dobít. Pošli ho rovně k baterce 🔋. Tip: na bloku můžeš nastavit, kolikrát se má opakovat.', par:1,
+   m:['.......','.......','.......','>...G..','.......','.......','.......']},
+  {t:'První zatáčka', d:'Teď musí robot zahnout. Pozor, otočení ho neposune, jen natočí.', par:3,
+   m:['.......','.....G.','.......','..##...','.......','.>.....','.......']},
+  {t:'Schody', d:'Schody se opakují pořád dokola… Zkus naprogramovat jeden schod a nastavit „Opakuj celý program“.', par:4,
+   m:['......G','......#','.....#.','....#..','...#...','..#....','^#.....']},
+  {t:'Had', d:'Delší cesta s více zatáčkami. Dokážeš to bez nárazu?', par:9,
+   m:['>.....#','#####.#','......#','.######','......G','#######','#######']},
+  {t:'Velký had', d:'Tohle je dlouhé! Najdi část, která se opakuje, a použij smyčku.', par:8,
+   m:['>......','######.','.......','.######','.......','######.','G......']},
+  {t:'Bludiště', d:'Finále! Najdi cestu bludištěm. Zvládneš to na co nejméně bloků?', par:11,
+   m:['v.#....','..#.##.','.##.#G.','....##.','###....','#######','#######']}
+];
+const DIRS = [[0,1],[1,0],[0,-1],[-1,0]]; // E S W N
+const DCH = {'>':0, 'v':1, '<':2, '^':3};
+const ROT = d => d * 90;
+let L = 0, prog = [], loopN = 1, running = false, stars = [], t0 = 0, tInt = 0, best = 0;
+let bot = null;
+
+function parse(l){
+  const m = LEVELS[l].m; let s, g; const walls = new Set();
+  m.forEach((row, r) => [...row].forEach((ch, c) => { if (ch === '#') walls.add(r + ',' + c); if (ch === 'G') g = [r, c]; if (ch in DCH) s = [r, c, DCH[ch]]; }));
+  return {s, g, walls};
+}
+function renderBoard(){
+  const P = parse(L);
+  $('#board').innerHTML = LEVELS[L].m.map((row, r) => [...row].map((ch, c) => `<div class="cell ${ch === '#' ? 'w' : ''} ${ch === 'G' ? 'g' : ''}" id="c${r}_${c}">${ch === 'G' ? '🔋' : ''}</div>`).join('')).join('') + `<div class="bot" id="bot"><i id="bdir"></i><span>🤖</span></div>`;
+  bot = {r: P.s[0], c: P.s[1], d: P.s[2]}; place(true);
+}
+function place(instant){
+  const b = $('#bot'), cell = $(`#c${bot.r}_${bot.c}`);
+  if (!b || !cell) return;
+  if (instant) b.style.transition = 'none';
+  b.style.transform = `translate(${cell.offsetLeft}px,${cell.offsetTop}px)`;
+  $('#bdir').style.transform = `rotate(${ROT(bot.d) + 90}deg)`;
+  if (instant) requestAnimationFrame(() => b.style.transition = '');
+}
+function renderLv(){
+  $('#lv').innerHTML = LEVELS.map((l, i) => `<button class="${i === L ? 'cur' : ''}" ${i > stars.length ? 'disabled' : ''} onclick="load(${i})">${i + 1}<small>${stars[i] ? '⭐'.repeat(stars[i]) : '&nbsp;'}</small></button>`).join('');
+}
+function renderSide(){
+  const lv = LEVELS[L];
+  $('#side').innerHTML = `
+    <div class="goalt"><div class="kicker">Level ${L + 1} / ${LEVELS.length}</div><h2>${lv.t}</h2><p class="info" style="margin:0">${lv.d}</p></div>
+    <div><div class="lbl">Bloky (ťukni pro přidání)</div><div class="pal">
+      <button onclick="add('F')">⬆️ Jdi vpřed</button><button class="t" onclick="add('L')">↺ Otoč vlevo</button><button class="t" onclick="add('R')">↻ Otoč vpravo</button>
+    </div></div>
+    <div><div class="lbl">Tvůj program · ťukni na ×1 pro opakování, na ✕ pro smazání</div><div class="prog" id="prog"></div></div>
+    <div class="loop">🔁 Opakuj celý program: ${[1,2,3,4,5,6].map(n => `<button class="${loopN === n ? 'sel' : ''}" onclick="setLoop(${n})">${n}×</button>`).join('')}</div>
+    <div class="runrow"><button class="btn-p" id="runBtn" onclick="run()" style="flex:1;font-size:20px">▶️ Spustit</button><button class="btn-s" onclick="clearProg()">🗑️ Smazat</button></div>
+    <div class="msg" id="msg"></div>
+    <div><div class="lbl">Takhle vypadá tvůj program v kódu</div><div class="code" id="code"></div></div>`;
+  renderProg();
+}
+const NAMES = {F:'⬆️ Vpřed', L:'↺ Vlevo', R:'↻ Vpravo'};
+function renderProg(){
+  $('#prog').innerHTML = prog.length ? prog.map((b, i) => `<div class="blk ${b.k !== 'F' ? 't' : ''}" id="b${i}">${NAMES[b.k]}<span class="x" onclick="rep(${i},event)">×${b.n}</span><span class="del" onclick="del(${i},event)">✕</span></div>`).join('') : '<span class="empty">Sem se skládají příkazy 👇 začni ťuknutím na blok nahoře</span>';
+  const fn = {F:'vpred', L:'otocVlevo', R:'otocVpravo'};
+  const lines = prog.map(b => `<span class="fn">${fn[b.k]}</span>(${b.k === 'F' ? `<span class="nm">${b.n}</span>` : b.n > 1 ? `<span class="nm">${b.n}</span>` : ''});`);
+  $('#code').innerHTML = !prog.length ? '<span class="cm">// zatím prázdno</span>' : loopN > 1
+    ? `<span class="kw">for</span> (<span class="kw">let</span> i = <span class="nm">0</span>; i < <span class="nm">${loopN}</span>; i++) {\n${lines.map(l => '  ' + l).join('\n')}\n}`
+    : lines.join('\n');
+}
+function add(k){
+  if (running) return; if (prog.length >= 14){ H.toast('Maximum je 14 bloků 🙂'); return; }
+  const last = prog[prog.length - 1];
+  if (last && last.k === k && k === 'F' && last.n < 9){ last.n++; } else prog.push({k, n: 1});
+  H.sfx('pop'); renderProg(); hideMsg();
+}
+function rep(i, e){ e.stopPropagation(); if (running) return; prog[i].n = prog[i].n % 9 + 1; H.sfx('blip'); renderProg(); }
+function del(i, e){ e.stopPropagation(); if (running) return; prog.splice(i, 1); H.sfx('click'); renderProg(); }
+function clearProg(){ if (running) return; prog = []; renderProg(); resetBot(); hideMsg(); }
+function setLoop(n){ if (running) return; loopN = n; renderSide(); }
+function hideMsg(){ const m = $('#msg'); if (m) m.className = 'msg'; }
+function msg(t, ok){ const m = $('#msg'); m.className = 'msg on ' + (ok ? 'ok' : 'no'); m.innerHTML = t; }
+function resetBot(){ document.querySelectorAll('.trail').forEach(c => c.classList.remove('trail')); const P = parse(L); bot = {r: P.s[0], c: P.s[1], d: P.s[2]}; place(true); $('#bot').classList.remove('crash'); }
+
+async function run(){
+  if (running || !prog.length) return;
+  running = true; $('#runBtn').disabled = true; hideMsg(); resetBot(); H.sfx('whoosh');
+  await new Promise(r => setTimeout(r, 300));
+  const P = parse(L), wait = ms => new Promise(r => setTimeout(r, ms));
+  let result = 'end';
+  outer: for (let loop = 0; loop < loopN; loop++){
+    for (let i = 0; i < prog.length; i++){
+      const b = prog[i]; document.querySelectorAll('.blk.run').forEach(x => x.classList.remove('run')); $('#b' + i)?.classList.add('run');
+      for (let k = 0; k < b.n; k++){
+        if (b.k === 'F'){
+          const nr = bot.r + DIRS[bot.d][0], nc = bot.c + DIRS[bot.d][1];
+          if (nr < 0 || nc < 0 || nr > 6 || nc > 6 || P.walls.has(nr + ',' + nc)){ result = 'crash'; break outer; }
+          $(`#c${bot.r}_${bot.c}`).classList.add('trail'); bot.r = nr; bot.c = nc; H.tone(500, 0, .05, 'triangle', .05);
+        } else { bot.d = (bot.d + (b.k === 'R' ? 1 : 3)) % 4; H.tone(700, 0, .04, 'sine', .04); }
+        place(); await wait(300);
+        if (bot.r === P.g[0] && bot.c === P.g[1]){ result = 'win'; break outer; }
+      }
+    }
+  }
+  document.querySelectorAll('.blk.run').forEach(x => x.classList.remove('run'));
+  if (result === 'win'){
+    const n = prog.length, par = LEVELS[L].par, st = n <= par ? 3 : n <= par + 2 ? 2 : 1;
+    stars[L] = Math.max(stars[L] || 0, st); H.sfx('win'); H.confettiAt($('#board'), 90);
+    msg(`<div class="stars">${'⭐'.repeat(st)}${'☆'.repeat(3 - st)}</div>Robot je u baterky! Použil jsi <b>${n}</b> ${n === 1 ? 'blok' : n < 5 ? 'bloky' : 'bloků'} (nejlepší řešení má ${par}).${st < 3 ? ' Zkus to kratší, pro 3 hvězdy.' : ''}<br><button class="btn-p" style="margin-top:10px" onclick="${L < LEVELS.length - 1 ? `load(${L + 1})` : 'finish()'}">${L < LEVELS.length - 1 ? 'Další level →' : '🏁 Dokončit'}</button>`, true);
+    H.speak(st === 3 ? 'Perfektní! Tři hvězdy.' : 'Super, robot je v cíli!');
+    renderLv();
+  } else if (result === 'crash'){
+    $('#bot').classList.add('crash'); H.sfx('bad');
+    msg('💥 Au! Robot narazil do zdi. Podívej se, kde se to pokazilo, oprav program a zkus to znovu. <b>Chyby jsou normální</b>, programátoři jim říkají „bugy“ 🐛', false);
+  } else {
+    H.sfx('bad'); msg('🤔 Program doběhl, ale robot není u baterky. Přidej další příkazy.', false);
+  }
+  running = false; $('#runBtn').disabled = false;
+}
+function load(i){
+  if (running) return; L = i; prog = []; loopN = 1; renderLv(); renderBoard(); renderSide();
+  if (!t0){ t0 = Date.now(); tInt = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); $('#timer').textContent = '⏱ ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }, 500); }
+}
+function lead(){ try { const d = new Date().toDateString(); return JSON.parse(localStorage.getItem('herna-robot') || '[]').filter(x => new Date(x.t).toDateString() === d); } catch(e){ return []; } }
+function finish(){
+  clearInterval(tInt); const secs = Math.floor((Date.now() - t0) / 1000), total = stars.reduce((a, b) => a + (b || 0), 0);
+  H.confetti(innerWidth / 2, innerHeight / 3, 160); H.speak('Gratuluju, jsi programátor!');
+  $('#side').innerHTML = `<div class="goalt"><div class="kicker">Hotovo!</div><h2>Jsi programátor! 🏆</h2>
+    <p class="info">Všech ${LEVELS.length} levelů za <b>${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}</b> a <b>${total} ⭐</b> z ${LEVELS.length * 3}. Právě jsi použil <b>příkazy</b>, <b>parametry</b> a <b>smyčky</b>, základ každého programovacího jazyka.</p></div>
+    <div class="panel"><div class="lbl">Zapiš se do žebříčku dne</div><div style="display:flex;gap:10px"><input class="txt" id="nm" maxlength="16" placeholder="Tvoje přezdívka"><button class="btn-p" onclick="saveLead(${secs},${total})">Uložit</button></div></div>
+    <div class="panel"><div class="lbl">🏆 Žebříček dne</div><ol class="lead" id="ld"></ol></div>
+    <div style="display:flex;gap:10px"><a class="btn-p" href="../" style="text-decoration:none">← Zpět do herny</a><button class="btn-s" onclick="location.reload()">Hrát znovu ↺</button></div>`;
+  showLead();
+}
+function saveLead(secs, total){
+  const n = $('#nm').value.trim() || 'Anonym';
+  try { const a = JSON.parse(localStorage.getItem('herna-robot') || '[]'); a.push({n, s: secs, st: total, t: Date.now()}); localStorage.setItem('herna-robot', JSON.stringify(a.slice(-200))); } catch(e){}
+  H.sfx('ding'); $('#nm').disabled = true; showLead();
+}
+function showLead(){
+  const a = lead().sort((x, y) => y.st - x.st || x.s - y.s).slice(0, 8);
+  $('#ld').innerHTML = a.length ? a.map((x, i) => `<li>${['🥇','🥈','🥉'][i] || (i + 1) + '.'} ${H.esc(x.n)}<small>${x.st} ⭐ · ${Math.floor(x.s / 60)}:${String(x.s % 60).padStart(2, '0')}</small></li>`).join('') : '<li style="color:var(--mut)">Zatím nikdo, buď první!</li>';
+}
+addEventListener('resize', () => place(true));
+load(0);
+H.speak('Ahoj! Naprogramuj robota, ať dojde k baterce.');
+</script>
+</body>
+</html>

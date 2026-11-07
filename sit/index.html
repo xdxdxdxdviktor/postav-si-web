@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cesta paketu – IT Herna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/common.css">
+<style>
+:root{--acc:#00d4ff;--acc2:#2193b0}
+body::before{background:radial-gradient(60vw 60vw at 5% -10%,rgba(0,212,255,.16),transparent 60%),radial-gradient(50vw 50vw at 105% 110%,rgba(33,147,176,.14),transparent 60%)}
+.wrap{max-width:1300px;margin:0 auto;padding:22px}
+.tabs{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.tabs button{padding:14px 20px;border-radius:14px;border:2px solid var(--line);background:var(--panel);font-weight:800;font-size:17px}
+.tabs button.sel{border-color:var(--acc);background:rgba(0,212,255,.12)}
+.send{display:grid;grid-template-columns:1fr 1fr auto;gap:14px;align-items:end}
+.dest{display:flex;gap:8px;flex-wrap:wrap}
+.dest button{padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--panel2);font-weight:700;font-size:15px}
+.dest button.sel{border-color:var(--acc);background:rgba(0,212,255,.14)}
+.route{position:relative;margin-top:22px;padding:30px 10px 20px;border-radius:22px;background:#0b0c16;border:1px solid var(--line);overflow:hidden;min-height:250px}
+.nodes{display:flex;justify-content:space-between;position:relative;z-index:2}
+.node{display:flex;flex-direction:column;align-items:center;gap:6px;width:110px;text-align:center;transition:.3s}
+.node .ni{width:70px;height:70px;border-radius:20px;background:var(--panel);border:2px solid var(--line);display:grid;place-items:center;font-size:34px;transition:.3s}
+.node b{font-size:13.5px}
+.node small{font-size:11.5px;color:var(--mut);font-family:'JetBrains Mono',monospace}
+.node.hit .ni{border-color:var(--acc);box-shadow:0 0 0 6px rgba(0,212,255,.15),0 0 30px rgba(0,212,255,.5);transform:scale(1.08)}
+.wire{position:absolute;left:60px;right:60px;top:65px;height:4px;background:repeating-linear-gradient(90deg,#2a2e45 0 10px,transparent 10px 18px);z-index:1}
+.wire.ocean{background:repeating-linear-gradient(90deg,#1d4ed8 0 10px,transparent 10px 18px)}
+.pkt{position:absolute;top:52px;z-index:3;padding:4px 8px;border-radius:8px;background:linear-gradient(135deg,var(--acc),#7c5cff);color:#fff;font:700 12px 'JetBrains Mono',monospace;white-space:nowrap;box-shadow:0 6px 16px rgba(0,212,255,.4)}
+.log{margin-top:16px;display:grid;grid-template-columns:1fr 340px;gap:16px}
+.steps{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow:auto}
+.st{padding:12px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:15px;line-height:1.45;animation:hin .3s}
+.st b{color:var(--acc)}
+.st .ms{float:right;font:700 13px 'JetBrains Mono',monospace;color:var(--warn)}
+.recv{background:#fff;color:#1a1a2e;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.recv .bubble{background:#e7f6ff;border-radius:16px 16px 16px 4px;padding:12px 14px;font-weight:600;min-height:44px}
+.recv .pk{display:flex;flex-wrap:wrap;gap:5px}
+.recv .pk span{padding:4px 7px;border-radius:7px;background:#eef0ff;font:700 12px 'JetBrains Mono',monospace;color:#555a78}
+.recv .pk span.in{background:#22c55e;color:#fff}
+.big{font-size:28px;font-weight:900;letter-spacing:-.02em}
+/* stavba sítě */
+.netgrid{display:grid;grid-template-columns:1fr 340px;gap:18px;align-items:start}
+svg.net{width:100%;height:auto;border-radius:22px;background:#0b0c16;border:1px solid var(--line);touch-action:manipulation;user-select:none}
+.net .edge{stroke:#00d4ff;stroke-width:6;stroke-linecap:round;opacity:.85}
+.net .edge.cut{stroke:#ff5e62;stroke-dasharray:12 10;opacity:.9}
+.net .path{stroke:#22c55e;stroke-width:9}
+.net .nd circle{fill:#161829;stroke:#3a3f5c;stroke-width:3;transition:.2s}
+.net .nd.sel circle{stroke:#00d4ff;stroke-width:6;fill:#10304a}
+.net .nd.broken circle{stroke:#ff5e62;fill:#2a1015}
+.net .nd text{font-size:36px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.net .nd .lab{font:700 15px Inter,sans-serif;fill:#9095b5}
+.net .nd{cursor:pointer}
+.budget{font-size:20px;font-weight:900}
+@media (max-width:980px){.send,.log,.netgrid{grid-template-columns:1fr}.node{width:80px}.node .ni{width:54px;height:54px;font-size:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tabs"><button id="tA" class="sel" onclick="tab('A')">✉️ Pošli zprávu přes internet</button><button id="tB" onclick="tab('B')">🔌 Postav si síť</button></div>
+  <div id="A"></div>
+  <div id="B" style="display:none"></div>
+</div>
+
+<script src="../shared/common.js"></script>
+<script>
+const H = Herna, $ = H.$;
+H.init({emoji:'📡', title:'Cesta paketu'});
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+/* =================== A: cesta zprávy =================== */
+const DEST = {
+  near:{l:'🏫 Kamarád ve vedlejší třídě', city:'Litoměřice', ping:4, ocean:false},
+  ny:{l:'🗽 Kamarád v New Yorku', city:'New York', ping:96, ocean:true},
+  tok:{l:'🗼 Kamarád v Tokiu', city:'Tokio', ping:248, ocean:true}
+};
+let dest = 'ny', sending = false;
+function renderA(){
+  $('#A').innerHTML = `
+    <div class="panel"><div class="send">
+      <div><label class="lbl">Tvoje zpráva</label><input class="txt" id="msg" maxlength="40" value="Ahoj, jak se máš? 👋"></div>
+      <div><label class="lbl">Komu</label><div class="dest">${Object.entries(DEST).map(([k, d]) => `<button class="${k === dest ? 'sel' : ''}" onclick="dest='${k}';renderA()">${d.l}</button>`).join('')}</div></div>
+      <button class="btn-p" id="go" onclick="send()" style="font-size:19px">Odeslat 🚀</button>
+    </div></div>
+    <div class="route" id="route"><div class="wire ${DEST[dest].ocean ? 'ocean' : ''}" id="wire"></div><div class="nodes" id="nodes"></div></div>
+    <div class="log"><div class="steps" id="steps"><div class="st">👆 Napiš zprávu, vyber kamaráda a klikni na <b>Odeslat</b>. Uvidíš, kudy zpráva doopravdy cestuje.</div></div>
+      <div class="recv"><div style="font-weight:800">📱 Mobil kamaráda</div><div class="bubble" id="bub">…</div><div class="pk" id="pk"></div><div id="sum"></div></div></div>`;
+  hops();
+}
+function hopList(){
+  const d = DEST[dest];
+  const h = [
+    {e:'💻', n:'Tvůj notebook', s:'192.168.0.15', t:`Zpráva se rozseká na malé kousky, <b>pakety</b>. Každý dostane číslo a adresu, kam má doletět.`},
+    {e:'🔎', n:'DNS server', s:'„telefonní seznam“', t:`Počítač neví, kde kamarád „bydlí“. Zeptá se <b>DNS serveru</b>, ten mu řekne číselnou <b>IP adresu</b>, třeba 185.12.4.7.`},
+    {e:'📶', n:'Wi-Fi router', s:'tvůj domov', t:`Pakety letí vzduchem přes <b>Wi-Fi</b> do routeru. Router je jako křižovatka, posílá je dál ven do internetu.`},
+    {e:'🏢', n:'Poskytovatel', s:'ISP', t:`Tvůj <b>poskytovatel internetu</b> pakety převezme a pošle je do páteřní sítě.`},
+    {e:'🌐', n:'Páteřní síť', s:'NIX Praha', t:`Tady se potkávají sítě z celé Česka. Pakety jedou <b>optickými kabely</b> rychlostí světla.`}
+  ];
+  if (d.ocean) h.push({e:'🌊', n:'Podmořský kabel', s:'pod oceánem', t:`Až 97 % internetového provozu mezi kontinenty jede <b>kabely po dně oceánu</b>, nejde přes satelity!`});
+  h.push({e:'🗄️', n:'Datacentrum', s:d.city, t:`Pakety dorazí do serveru aplikace (třeba chatu) v ${d.city === 'Litoměřice' ? 'Praze' : d.city}.`});
+  h.push({e:'📱', n:'Kamarád', s:d.city, t:`Mobil kamaráda poskládá pakety podle čísel zpátky do zprávy. <b>Hotovo!</b>`});
+  return h;
+}
+function hops(){ $('#nodes').innerHTML = hopList().map((h, i) => `<div class="node" id="n${i}"><div class="ni">${h.e}</div><b>${h.n}</b><small>${h.s}</small></div>`).join(''); }
+async function send(){
+  if (sending) return; sending = true; $('#go').disabled = true; H.sfx('whoosh');
+  const text = $('#msg').value || 'Ahoj!', parts = [];
+  for (let i = 0; i < text.length; i += 5) parts.push(text.slice(i, i + 5));
+  hops(); $('#steps').innerHTML = ''; $('#bub').textContent = '…'; $('#sum').innerHTML = '';
+  $('#pk').innerHTML = parts.map((p, i) => `<span id="pk${i}">#${i + 1} ⏳</span>`).join('');
+  const list = hopList(), d = DEST[dest], route = $('#route');
+  const xs = list.map((_, i) => { const n = $('#n' + i), r = route.getBoundingClientRect(), b = n.getBoundingClientRect(); return b.left - r.left + b.width / 2; });
+  const per = (d.ping * 1) / (list.length - 1);
+  let acc = 0;
+  for (let i = 0; i < list.length; i++){
+    $('#n' + i).classList.add('hit'); H.tone(500 + i * 80, 0, .08, 'triangle', .07);
+    const ms = i === 0 ? 0 : Math.max(1, Math.round(per * (list[i].e === '🌊' ? 3 : 1)));
+    acc += ms;
+    $('#steps').insertAdjacentHTML('beforeend', `<div class="st"><span class="ms">${i ? '+' + ms + ' ms' : 'start'}</span>${list[i].e} <b>${list[i].n}:</b> ${list[i].t}</div>`);
+    $('#steps').scrollTop = 1e6;
+    if (i < list.length - 1){
+      // pakety letí k dalšímu uzlu
+      parts.forEach((p, k) => {
+        const el = document.createElement('div'); el.className = 'pkt'; el.textContent = '#' + (k + 1) + ' ' + p; route.appendChild(el);
+        const y = (k % 3) * 22;
+        el.animate([{transform:`translate(${xs[i] - 30}px,${y}px)`, opacity:0},{opacity:1, offset:.15},{transform:`translate(${xs[i + 1] - 30}px,${y}px)`, opacity:1, offset:.9},{opacity:0}], {duration:1100, delay:k * 120, easing:'ease-in-out'}).onfinish = () => el.remove();
+      });
+      await wait(1100 + parts.length * 120);
+    }
+  }
+  // poskládání
+  for (let k = 0; k < parts.length; k++){ await wait(160); const s = $('#pk' + k); s.className = 'in'; s.textContent = '#' + (k + 1) + ' ✓'; H.tone(900, 0, .04, 'sine', .05); }
+  $('#bub').textContent = text; H.sfx('win');
+  const km = {near:2, ny:6600, tok:9100}[dest];
+  $('#sum').innerHTML = `<div class="big">${acc} ms</div><div style="color:#555a78;font-size:14px;line-height:1.4">Zpráva urazila asi <b>${km.toLocaleString('cs-CZ')} km</b> v <b>${parts.length}</b> paketech. Mrknutí oka trvá ~300 ms, takže zpráva doletěla ${acc < 300 ? 'rychleji, než mrkneš 😉' : 'zhruba za mrknutí oka 😉'}</div>`;
+  H.speak(`Zpráva doletěla za ${acc} milisekund.`);
+  sending = false; $('#go').disabled = false;
+}
+
+/* =================== B: postav síť =================== */
+const NETS = [
+  {t:'Připoj počítač k serveru', d:'Ťukni na dva uzly a natáhneš mezi nimi kabel. Ťuknutím na kabel ho zase zrušíš. Spoj 💻 počítač s 🗄️ serverem přes routery.', budget:3,
+   n:[['pc',120,280,'💻','Počítač'],['r1',380,140,'🔀','Router A'],['r2',640,420,'🔀','Router B'],['sv',880,280,'🗄️','Server']]},
+  {t:'Porouchaný router', d:'Router C je rozbitý ❌ a pakety přes něj neprojdou. Najdi jinou cestu!', budget:4,
+   n:[['pc',100,280,'💻','Počítač'],['r1',330,120,'🔀','Router A'],['rx',500,280,'❌','Router C','broken'],['r2',330,440,'🔀','Router B'],['r3',680,440,'🔀','Router D'],['r4',680,120,'🔀','Router E'],['sv',900,280,'🗄️','Server']]},
+  {t:'Odolná síť', d:'Skuteční síťaři staví sítě tak, aby fungovaly, i když jeden router vypadne. Postav síť, ve které paket dojde, <b>ať vypadne kterýkoliv jeden router</b>.', budget:6, redundant:true,
+   n:[['pc',100,280,'💻','Počítač'],['r1',360,120,'🔀','Router A'],['r2',360,440,'🔀','Router B'],['r3',640,120,'🔀','Router C'],['r4',640,440,'🔀','Router D'],['sv',900,280,'🗄️','Server']]}
+];
+let NL = 0, edges = [], sel = null, netDone = [];
+function nodeMap(){ const m = {}; NETS[NL].n.forEach(([id, x, y, e, l, f]) => m[id] = {id, x, y, e, l, broken: f === 'broken'}); return m; }
+const ek = (a, b) => [a, b].sort().join('|');
+function renderB(){
+  const N = NETS[NL];
+  $('#B').innerHTML = `<div class="netgrid">
+    <div><svg class="net" id="svg" viewBox="0 0 1000 560"></svg></div>
+    <div class="panel" style="display:flex;flex-direction:column;gap:12px">
+      <div class="kicker">Síť ${NL + 1} / ${NETS.length}</div>
+      <h2 style="margin:0;font-size:26px">${N.t}</h2>
+      <p class="info" style="margin:0">${N.d}</p>
+      <div class="budget" id="bud"></div>
+      <button class="btn-p" onclick="test()" style="font-size:19px">📨 Odeslat paket</button>
+      <button class="btn-s" onclick="edges=[];sel=null;draw()">🗑️ Zrušit kabely</button>
+      <div id="nres"></div>
+      <div style="display:flex;gap:8px">${NETS.map((_, i) => `<button class="btn-s" style="padding:10px 14px;${i === NL ? 'border-color:var(--acc)' : ''}" ${i > netDone.length ? 'disabled' : ''} onclick="NL=${i};edges=[];sel=null;renderB()">${i + 1}${netDone[i] ? ' ✓' : ''}</button>`).join('')}</div>
+    </div></div>`;
+  draw();
+}
+function draw(path = [], cut = null){
+  const M = nodeMap(), pk = new Set(); for (let i = 0; i < path.length - 1; i++) pk.add(ek(path[i], path[i + 1]));
+  let s = '';
+  edges.forEach(e => { const [a, b] = e.split('|'); s += `<line class="edge ${pk.has(e) ? 'path' : ''} ${cut && (a === cut || b === cut) ? 'cut' : ''}" x1="${M[a].x}" y1="${M[a].y}" x2="${M[b].x}" y2="${M[b].y}" data-e="${e}"/>`; });
+  Object.values(M).forEach(n => { s += `<g class="nd ${sel === n.id ? 'sel' : ''} ${n.broken || cut === n.id ? 'broken' : ''}" data-n="${n.id}"><circle cx="${n.x}" cy="${n.y}" r="48"/><text x="${n.x}" y="${n.y}">${cut === n.id ? '💥' : n.e}</text><text class="lab" x="${n.x}" y="${n.y + 72}">${n.l}</text></g>`; });
+  $('#svg').innerHTML = s;
+  const left = NETS[NL].budget - edges.length;
+  $('#bud').innerHTML = `🔌 Kabely: ${'🟦'.repeat(Math.max(0, left))}${'⬜'.repeat(edges.length)} <span style="font-size:15px;color:var(--mut)">(zbývá ${left})</span>`;
+  $('#svg').querySelectorAll('.nd').forEach(g => g.onclick = () => pickNode(g.dataset.n));
+  $('#svg').querySelectorAll('.edge').forEach(l => l.onclick = () => { edges = edges.filter(x => x !== l.dataset.e); H.sfx('click'); draw(); });
+}
+function pickNode(id){
+  if (!sel){ sel = id; H.sfx('blip'); draw(); return; }
+  if (sel === id){ sel = null; draw(); return; }
+  const k = ek(sel, id);
+  if (edges.includes(k)) edges = edges.filter(x => x !== k);
+  else if (Math.hypot(nodeMap()[sel].x - nodeMap()[id].x, nodeMap()[sel].y - nodeMap()[id].y) > 420){ H.toast('Kabel by byl moc dlouhý 📏 Spoj bližší uzly.'); H.sfx('bad'); }
+  else if (edges.length >= NETS[NL].budget){ H.toast('Došly ti kabely 🔌 Zruš nějaký ťuknutím na něj.'); H.sfx('bad'); }
+  else { edges.push(k); H.sfx('pop'); }
+  sel = null; draw();
+}
+function bfs(skip){
+  const M = nodeMap(), adj = {}; Object.keys(M).forEach(k => adj[k] = []);
+  edges.forEach(e => { const [a, b] = e.split('|'); adj[a].push(b); adj[b].push(a); });
+  const bad = id => M[id].broken || id === skip, prev = {pc: null}, q = ['pc'];
+  while (q.length){ const u = q.shift(); if (u === 'sv'){ const p = []; let c = 'sv'; while (c){ p.unshift(c); c = prev[c]; } return p; } for (const v of adj[u]) if (!(v in prev) && !bad(v)){ prev[v] = u; q.push(v); } }
+  return null;
+}
+async function animatePath(p){
+  const M = nodeMap(), svg = $('#svg');
+  draw(p);
+  const dot = document.createElementNS('http://www.w3.org/2000/svg', 'text'); dot.textContent = '✉️'; dot.setAttribute('font-size', '34'); dot.setAttribute('text-anchor', 'middle'); dot.setAttribute('dominant-baseline', 'central'); svg.appendChild(dot);
+  for (let i = 0; i < p.length - 1; i++){
+    const a = M[p[i]], b = M[p[i + 1]];
+    for (let t = 0; t <= 1.001; t += .08){ dot.setAttribute('x', a.x + (b.x - a.x) * t); dot.setAttribute('y', a.y + (b.y - a.y) * t - 4); await wait(22); }
+    H.tone(600 + i * 100, 0, .06, 'triangle', .06);
+  }
+  dot.remove();
+}
+async function test(){
+  const N = NETS[NL], p = bfs();
+  if (!p){ H.sfx('bad'); $('#nres').innerHTML = `<div class="tip" style="border-color:rgba(255,94,98,.5);background:rgba(255,94,98,.1)">📭 Paket se ztratil! Mezi počítačem a serverem není souvislá cesta${N.n.some(n => n[5] === 'broken') ? ', nebo vede přes rozbitý router' : ''}.</div>`; return; }
+  await animatePath(p);
+  if (N.redundant){
+    const routers = N.n.filter(n => n[0].startsWith('r')).map(n => n[0]);
+    for (const r of routers){
+      if (!p.includes(r)) continue;
+      const alt = bfs(r);
+      if (!alt){
+        H.sfx('bad'); draw([], r);
+        $('#nres').innerHTML = `<div class="tip" style="border-color:rgba(255,94,98,.5);background:rgba(255,94,98,.1)">💥 Test výpadku: <b>${nodeMap()[r].l}</b> vypadl a paket už neprojde. Přidej záložní cestu!</div>`; return;
+      }
+      draw([], r); $('#nres').innerHTML = `<div class="tip">💥 Test: vypadl <b>${nodeMap()[r].l}</b>… paket jede náhradní cestou!</div>`;
+      await wait(500); await animatePath(alt);
+    }
+  }
+  netDone[NL] = true; H.sfx('win'); H.confettiAt($('#svg'), 90);
+  const last = NL === NETS.length - 1;
+  $('#nres').innerHTML = `<div class="tip" style="border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.1)">✅ Paket dorazil! ${N.redundant ? 'Tvoje síť přežije výpadek jakéhokoliv routeru. Takhle se staví internet!' : ''}</div>
+    <button class="btn-p" onclick="${last ? "location.href='../'" : 'NL++;edges=[];sel=null;renderB()'}">${last ? '🏁 Hotovo, zpět do herny' : 'Další síť →'}</button>`;
+  H.speak(last ? 'Výborně, jsi síťař!' : 'Paket dorazil!');
+}
+
+function tab(t){ $('#tA').classList.toggle('sel', t === 'A'); $('#tB').classList.toggle('sel', t === 'B'); $('#A').style.display = t === 'A' ? '' : 'none'; $('#B').style.display = t === 'B' ? '' : 'none'; if (t === 'B' && !$('#svg')) renderB(); }
+renderA();
+addEventListener('resize', () => { if ($('#nodes') && !sending) hops(); });
+</script>
+</body>
+</html>

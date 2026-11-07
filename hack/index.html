@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hackni trezor – IT Herna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/common.css">
+<style>
+:root{--acc:#22c55e;--acc2:#00d4ff}
+body::before{background:radial-gradient(60vw 60vw at 5% -10%,rgba(34,197,94,.16),transparent 60%),radial-gradient(50vw 50vw at 105% 110%,rgba(0,212,255,.12),transparent 60%)}
+.wrap{max-width:1240px;margin:0 auto;padding:24px;display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start}
+.left{position:sticky;top:90px;display:flex;flex-direction:column;gap:16px}
+.vault{position:relative;aspect-ratio:1/1;border-radius:28px;background:linear-gradient(145deg,#1d2033,#0d0f1a);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;box-shadow:inset 0 0 60px rgba(0,0,0,.6)}
+.door{width:78%;aspect-ratio:1/1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#4a4f6a,#23263a 60%,#15172a);border:10px solid #2e3249;box-shadow:0 0 0 6px #191b2c,0 20px 50px rgba(0,0,0,.7);display:grid;place-items:center;transition:transform 1.4s cubic-bezier(.6,-0.2,.3,1.3);transform-origin:left center;position:relative;z-index:2}
+.dial{width:46%;aspect-ratio:1/1;border-radius:50%;background:repeating-conic-gradient(#3a3f5c 0 4deg,#2a2e45 4deg 10deg);border:6px solid #50567a;display:grid;place-items:center;transition:transform .8s}
+.dial::after{content:'';width:38%;aspect-ratio:1/1;border-radius:50%;background:#1a1c2c;border:3px solid #6b7299}
+.bolts{position:absolute;inset:0}
+.bolts i{position:absolute;width:18px;height:18px;border-radius:50%;background:#5c6286;box-shadow:inset 0 -3px 0 rgba(0,0,0,.4)}
+.vault.open .door{transform:perspective(900px) rotateY(-105deg)}
+.vault .loot{position:absolute;inset:0;display:grid;place-items:center;font-size:90px;z-index:1;opacity:0;transition:opacity .6s .8s}
+.vault.open .loot{opacity:1}
+.vault .loot span{animation:hpop 1s .9s}
+.locks{display:flex;gap:10px}
+.lock{flex:1;padding:12px 8px;border-radius:14px;background:var(--panel);border:1px solid var(--line);text-align:center;font-weight:700;font-size:13px;color:var(--mut);transition:.3s}
+.lock b{display:block;font-size:26px;margin-bottom:4px}
+.lock.on{border-color:var(--acc);background:rgba(34,197,94,.12);color:var(--txt)}
+.lock.cur{border-color:var(--acc2);box-shadow:0 0 0 3px rgba(0,212,255,.15)}
+.timer{font:700 15px 'JetBrains Mono',monospace;color:var(--mut);text-align:center}
+.stage{animation:hin .4s}
+.stage h2{font-size:34px;margin:6px 0 10px;letter-spacing:-.02em}
+.term{background:#050807;border:1px solid #1d3326;border-radius:16px;padding:18px;font:15px/1.7 'JetBrains Mono',monospace;color:#7dffb0;box-shadow:inset 0 0 40px rgba(34,197,94,.06)}
+.term .dim{color:#3f7a55}
+.term .err{color:#ff7b7b}
+.login{background:#fff;color:#1a1a2e;border-radius:18px;padding:22px;max-width:420px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.login h3{margin:0;font-size:20px;display:flex;align-items:center;gap:8px}
+.login label{font-size:13px;font-weight:700;color:#555a78}
+.login input{width:100%;padding:12px 14px;border-radius:10px;border:2px solid #d9dbea;font-size:17px;font-family:'JetBrains Mono',monospace;outline:none;color:#1a1a2e;background:#fff}
+.login input:focus{border-color:var(--acc)}
+.login button{padding:13px;border-radius:10px;border:0;background:#1a1a2e;color:#fff;font-weight:800;font-size:16px}
+.login .msg{font-weight:700;font-size:14px;min-height:20px}
+.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.hints{display:flex;flex-direction:column;gap:8px;min-width:260px;flex:1}
+.hint{padding:12px 14px;border-radius:12px;background:var(--panel);border:1px dashed #3a3f5c;color:var(--mut);font-size:15px}
+.hint.on{border-style:solid;border-color:var(--warn);color:var(--txt);background:rgba(255,176,32,.08)}
+.mail{background:#fff;color:#1a1a2e;border-radius:18px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:640px}
+.mail .mh{padding:16px 20px;border-bottom:1px solid #eceef7;display:flex;flex-direction:column;gap:4px;font-size:14px;color:#555a78}
+.mail .mh b{color:#1a1a2e}
+.mail .ms{font-size:20px;font-weight:800;color:#1a1a2e;margin-top:6px}
+.mail .mb{padding:18px 20px;font-size:16px;line-height:1.55}
+.mail .mb .lnk{color:#2563eb;text-decoration:underline}
+.mail .mb .fakebtn{display:inline-block;margin-top:10px;padding:10px 16px;border-radius:8px;background:#e11d48;color:#fff;font-weight:800}
+.flag{background:rgba(255,94,98,.18);outline:2px solid #ff5e62;border-radius:4px;position:relative}
+.flagnote{display:block;font-size:12.5px;font-weight:800;color:#e11d48;margin-top:2px}
+.choices{display:flex;gap:12px;margin-top:16px}
+.choices button{flex:1;padding:18px;border-radius:16px;font-size:19px;font-weight:800;border:2px solid var(--line);background:var(--panel)}
+.choices .ph:hover{border-color:var(--bad)}
+.choices .ok:hover{border-color:var(--ok)}
+.verdict{margin-top:14px;padding:14px 16px;border-radius:14px;font-weight:700;line-height:1.45}
+.verdict.good{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.5)}
+.verdict.badv{background:rgba(255,94,98,.12);border:1px solid rgba(255,94,98,.5)}
+.dots{display:flex;gap:6px;margin-bottom:12px}
+.dots i{width:30px;height:8px;border-radius:9px;background:var(--line)}
+.dots i.g{background:var(--ok)}.dots i.r{background:var(--bad)}.dots i.c{background:var(--acc2)}
+.sql{background:#050807;border:1px solid #1d3326;border-radius:14px;padding:16px;font:15px/1.6 'JetBrains Mono',monospace;color:#c9cdf0;word-break:break-all}
+.sql .kw{color:#bd93f9}.sql .st{color:#f1fa8c}.sql .inj{background:rgba(255,94,98,.3);color:#ffb3b3;border-radius:3px}.sql .cm{color:#6c76a8}
+.meter{height:16px;border-radius:99px;background:var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;transition:width .4s,background .4s}
+.crack{font-size:clamp(26px,3.4vw,40px);font-weight:900;letter-spacing:-.02em;margin:8px 0}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-top:10px}
+.checks div{font-size:15px;color:var(--mut)}
+.checks div.y{color:var(--txt)}
+.pwwrap{position:relative}
+.pwwrap button{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:20px}
+.bigok{font-size:60px;text-align:center}
+@media (max-width:900px){.wrap{grid-template-columns:1fr}.left{position:static}.vault{max-width:320px;margin:0 auto;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="left">
+    <div class="vault" id="vault">
+      <div class="loot"><span>🏆</span></div>
+      <div class="door"><div class="bolts" id="bolts"></div><div class="dial" id="dial"></div></div>
+    </div>
+    <div class="locks">
+      <div class="lock" id="lk0"><b>🔒</b>Heslo</div>
+      <div class="lock" id="lk1"><b>🔒</b>Phishing</div>
+      <div class="lock" id="lk2"><b>🔒</b>Formulář</div>
+    </div>
+    <div class="timer" id="timer">⏱ 0:00</div>
+  </div>
+  <main id="main"></main>
+</div>
+
+<script src="../shared/qrcode.js"></script>
+<script src="../shared/common.js"></script>
+<script>
+const H = Herna, $ = H.$;
+H.init({emoji:'🕵️', title:'Hackni trezor'});
+
+// šrouby na dveřích
+$('#bolts').innerHTML = Array.from({length: 12}, (_, i) => { const a = i / 12 * Math.PI * 2; return `<i style="left:calc(50% + ${Math.cos(a) * 44}% - 9px);top:calc(50% + ${Math.sin(a) * 44}% - 9px)"></i>`; }).join('');
+
+let lvl = -1, t0 = 0, tInt = 0;
+const solved = [false, false, false];
+function setLocks(){
+  for (let i = 0; i < 3; i++){
+    const l = $('#lk' + i); l.classList.toggle('on', solved[i]); l.classList.toggle('cur', i === lvl);
+    l.querySelector('b').textContent = solved[i] ? '🔓' : '🔒';
+  }
+  $('#dial').style.transform = `rotate(${solved.filter(Boolean).length * 120}deg)`;
+}
+function unlock(i){
+  solved[i] = true; setLocks(); H.sfx('win'); H.confettiAt($('#lk' + i), 70);
+  setTimeout(() => go(i + 1), 1300);
+}
+function fmt(ms){ const s = Math.floor(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
+/* ---------- ÚVOD ---------- */
+function intro(){
+  lvl = -1; setLocks();
+  $('#main').innerHTML = `<div class="stage">
+    <div class="kicker">Mise pro hackera</div>
+    <h2>Prolom školní trezor 🕵️</h2>
+    <p class="info">V trezoru je ukrytá trofej. Chrání ho <b>3 zámky</b> a každý z nich hlídá jiná bezpečnostní chyba.
+    Etičtí hackeři (říká se jim <b>white hat</b>) hledají chyby dřív než ti zlí, aby je firmy stihly opravit. Dnes jsi jedním z nich.</p>
+    <div class="term" style="margin:18px 0"><span class="dim">$</span> connect trezor.1kspa.local<br><span class="dim">…</span> spojení navázáno<br><span class="dim">…</span> nalezeny 3 zámky: <b>[heslo]</b> <b>[phishing]</b> <b>[formulář]</b><br><span class="dim">$</span> <span id="blink">_</span></div>
+    <button class="btn-p" style="font-size:20px;padding:18px 34px" onclick="start()">Spustit hackování 💻</button>
+    <p class="tip" style="margin-top:18px">🛡️ Všechno tady je jen cvičení. Skutečné hackování cizích systémů bez svolení je trestné. Tohle se ale učí profíci v kyberbezpečnosti, a ti jsou hodně žádaní.</p>
+  </div>`;
+}
+function start(){
+  t0 = Date.now(); clearInterval(tInt); tInt = setInterval(() => $('#timer').textContent = '⏱ ' + fmt(Date.now() - t0), 500);
+  H.speak('Mise začíná. Prolom první zámek.'); go(0);
+}
+function go(i){
+  lvl = i; setLocks();
+  [lvlPassword, lvlPhishing, lvlSql, finale][i]();
+  scrollTo({top: 0, behavior: 'smooth'});
+}
+
+/* ---------- 1. SLABÉ HESLO ---------- */
+const WORDLIST = ['123456','password','123456789','qwerty','12345678','111111','heslo','abc123','iloveyou','admin','martin','password1','1234','000000','tereza','petr','qwertz','sparta','slavia','heslo1','monika','lucie','jana','123123','pepa','skola','ahoj','tomas','heslo123'];
+let tries1 = 0;
+function lvlPassword(){
+  tries1 = 0;
+  $('#main').innerHTML = `<div class="stage">
+    <div class="kicker">Zámek 1 / 3 · Slabé heslo</div>
+    <h2>Uhodni heslo správce 🔑</h2>
+    <p class="info">Správce školního serveru použil jedno z <b>nejčastějších hesel v Česku</b>. Zkus ho uhodnout, nebo na něj pusť hackerského robota.</p>
+    <div class="row" style="margin-top:16px">
+      <form class="login" id="lf" onsubmit="return tryPass(event)">
+        <h3>🏫 Školní server</h3>
+        <div><label>Uživatel</label><input value="admin" disabled></div>
+        <div><label>Heslo</label><input id="pw" autocomplete="off" placeholder="zkus třeba 123456"></div>
+        <button>Přihlásit</button>
+        <div class="msg" id="lmsg"></div>
+      </form>
+      <div class="hints">
+        <div class="hint" id="h0">💡 Nápověda 1 se ukáže po 2 pokusech</div>
+        <div class="hint" id="h1">💡 Nápověda 2 se ukáže po 4 pokusech</div>
+        <div class="hint" id="h2">💡 Nápověda 3 se ukáže po 6 pokusech</div>
+        <button class="btn-s" onclick="robot()" style="border-color:var(--acc)">🤖 Pustit hackerského robota</button>
+      </div>
+    </div>
+    <div class="term" id="rob" style="margin-top:16px;display:none"></div>
+  </div>`;
+  setTimeout(() => $('#pw').focus(), 50);
+}
+function tryPass(e){
+  e.preventDefault();
+  const v = $('#pw').value.trim().toLowerCase(); if (!v) return false;
+  tries1++;
+  if (v === 'heslo123'){ $('#lmsg').style.color = '#16a34a'; $('#lmsg').textContent = '✓ Přihlášeno! Heslo bylo „heslo123“.'; done1(false); return false; }
+  $('#lf').classList.remove('shake'); void $('#lf').offsetWidth; $('#lf').classList.add('shake'); H.sfx('bad');
+  $('#lmsg').style.color = '#e11d48'; $('#lmsg').textContent = `✗ Špatné heslo (pokus ${tries1})`;
+  const hs = ['Je to česky 🇨🇿', 'Je to přesně to slovo, které teď hledáš 🙃', 'Za slovem jsou tři čísla: 1, 2, 3'];
+  [2, 4, 6].forEach((n, i) => { if (tries1 >= n){ const h = $('#h' + i); h.classList.add('on'); h.textContent = '💡 ' + hs[i]; } });
+  $('#pw').select(); return false;
+}
+function robot(){
+  const t = $('#rob'); t.style.display = 'block'; t.innerHTML = '';
+  let i = 0, count = 0; const t1 = performance.now();
+  const iv = setInterval(() => {
+    for (let k = 0; k < 3 && i < WORDLIST.length; k++, i++){
+      count += 97 + Math.floor(Math.random() * 40);
+      const w = WORDLIST[i], hit = w === 'heslo123';
+      t.innerHTML += `<div class="${hit ? '' : 'dim'}">${hit ? '✅' : '✗'} zkouším: ${w}${hit ? '  ← NALEZENO!' : ''}</div>`;
+      if (hit){
+        clearInterval(iv); const ms = Math.round(performance.now() - t1);
+        t.innerHTML += `<div style="margin-top:8px">Robot vyzkoušel <b>${count.toLocaleString('cs-CZ')}</b> hesel za <b>${(ms / 1000).toFixed(1)} s</b>.</div>`;
+        done1(true); return;
+      }
+    }
+    t.scrollTop = t.scrollHeight;
+  }, 90);
+}
+function done1(byRobot){
+  H.speak('První zámek je otevřený!');
+  setTimeout(() => {
+    $('#main').insertAdjacentHTML('beforeend', `<div class="verdict good" style="margin-top:16px">🔓 Zámek 1 otevřen! ${byRobot ? 'Robot to zvládl za pár vteřin.' : `Zvládl jsi to na ${tries1}. pokus.`}<br>
+      <span style="font-weight:500">Hackeři mají seznamy milionů uniklých hesel a zkoušejí je automaticky. Proto <b>nikdy nepoužívej běžná slova ani „123“</b> na konci.</span></div>`);
+    unlock(0);
+  }, 400);
+}
+
+/* ---------- 2. PHISHING ---------- */
+const MAILS = [
+  {from:'StreamFlix podpora', addr:'podpora@streamf1ix-ucet.co', subj:'⚠️ Váš účet bude do 24 hodin ZABLOKOVÁN!',
+   body:'Dobrý den,<br>zaznamenali jsme problém s platbou. Pokud do 24 hodin neověříte své údaje, <span data-f="1">účet bude trvale smazán</span>.<br><span data-f="2" class="fakebtn">OVĚŘIT ÚČET A KARTU</span>',
+   phish:true, flags:{addr:'Adresa: „streamf1ix“ s jedničkou místo L a divná koncovka .co', 1:'Nátlak a strašení časem', 2:'Chce po tobě údaje o kartě přes odkaz'}},
+  {from:'Mgr. Jana Nováková', addr:'novakova@skola-litomerice.cz', subj:'Exkurze v pátek – sraz v 8:00 u školy',
+   body:'Ahoj třído,<br>připomínám páteční exkurzi do technického muzea. Sraz je v 8:00 před hlavním vchodem, s sebou svačinu a pití. Vstupné už je zaplacené.<br><br>Mějte se, J. Nováková',
+   phish:false, why:'Známý odesílatel ze školní domény, nic po tobě nechce, žádný odkaz ani nátlak.'},
+  {from:'Odměny 🎁', addr:'winner@free-prize-cz.top', subj:'Gratulujeme!!! Vyhrál jsi iPhone 17 🎉',
+   body:'Byl jsi vylosován jako 1 000 000. návštěvník! Svůj nový iPhone si vyzvedni ještě dnes. <span data-f="1">Stačí zaplatit poštovné 49 Kč kartou</span>.<br><span data-f="2" class="lnk">free-prize-cz.top/vyzvednout</span>',
+   phish:true, flags:{addr:'Neznámá adresa s koncovkou .top', 1:'„Výhra“, o kterou ses nesoutěžil, a platba předem', 2:'Podezřelý odkaz'}},
+  {from:'GameStore', addr:'no-reply@gamestore.com', subj:'Potvrzení objednávky #48213',
+   body:'Děkujeme za nákup.<br>Hra: <b>Minecraft</b> – 649 Kč, zaplaceno.<br><br>Pokud jsi objednávku nevytvořil, přihlas se <b>přímo na našem webu</b> (nepoužívej odkazy z e-mailů) a kontaktuj podporu.',
+   phish:false, why:'Nic po tobě nechce, nemá odkaz na přihlášení a dokonce radí jít na web napřímo. (Pokud jsi ale nic nekupoval, vždycky to ověř!)'}
+];
+let mi = 0, mScore = 0, mRes = [];
+function lvlPhishing(){ mi = 0; mScore = 0; mRes = []; showMail(); }
+function showMail(){
+  const m = MAILS[mi];
+  $('#main').innerHTML = `<div class="stage">
+    <div class="kicker">Zámek 2 / 3 · Phishing</div>
+    <h2>Pravý e-mail, nebo podvod? 🎣</h2>
+    <p class="info"><b>Phishing</b> je podvodný e-mail, který se tváří jako od firmy, aby z tebe vylákal heslo nebo peníze. Odhal aspoň <b>3 ze 4</b>.</p>
+    <div class="dots">${MAILS.map((_, i) => `<i class="${mRes[i] === true ? 'g' : mRes[i] === false ? 'r' : i === mi ? 'c' : ''}"></i>`).join('')}</div>
+    <div class="mail" id="mail">
+      <div class="mh"><span>Od: <b>${m.from}</b> &lt;<span id="maddr">${m.addr}</span>&gt;</span><span>Komu: tobě</span><div class="ms">${m.subj}</div></div>
+      <div class="mb" id="mbody">${m.body}</div>
+    </div>
+    <div class="choices" id="ch"><button class="ok" onclick="answer(false)">✅ Pravý</button><button class="ph" onclick="answer(true)">🎣 Podvod</button></div>
+    <div id="verd"></div>
+  </div>`;
+}
+function answer(saidPhish){
+  const m = MAILS[mi], right = saidPhish === m.phish; mRes[mi] = right; if (right) mScore++;
+  H.sfx(right ? 'ding' : 'bad');
+  $('#ch').style.display = 'none';
+  if (m.phish){
+    const a = $('#maddr'); a.classList.add('flag'); a.insertAdjacentHTML('afterend', `<span class="flagnote">🚩 ${m.flags.addr}</span>`);
+    document.querySelectorAll('#mbody [data-f]').forEach(el => { el.classList.add('flag'); el.insertAdjacentHTML('afterend', `<span class="flagnote">🚩 ${m.flags[el.dataset.f]}</span>`); });
+  }
+  const last = mi === MAILS.length - 1;
+  $('#verd').innerHTML = `<div class="verdict ${right ? 'good' : 'badv'}">${right ? '✓ Správně!' : '✗ Vedle!'} Tohle ${m.phish ? 'byl <b>podvod</b>. Červeně jsou varovné signály.' : 'byl <b>pravý e-mail</b>. ' + m.why}</div>
+    <button class="btn-p" style="margin-top:14px" onclick="${last ? 'endMails()' : 'mi++;showMail()'}">${last ? 'Vyhodnotit →' : 'Další e-mail →'}</button>`;
+}
+function endMails(){
+  if (mScore >= 3){
+    $('#main').innerHTML = `<div class="stage"><div class="bigok">🎣✅</div><h2 style="text-align:center">Odhalil jsi ${mScore} ze 4!</h2>
+      <p class="info" style="text-align:center">Phishing je nejčastější způsob, jak hackeři lidi okradou. Pamatuj: <b>nátlak, překlepy v adrese a žádost o heslo nebo kartu = podvod.</b></p></div>`;
+    H.speak('Druhý zámek je otevřený!'); unlock(1);
+  } else {
+    $('#main').innerHTML = `<div class="stage"><div class="bigok">🤔</div><h2 style="text-align:center">${mScore} ze 4, to je málo</h2>
+      <p class="info" style="text-align:center">Hackeři by tě nachytali. Zkus to znovu a dívej se hlavně na <b>adresu odesílatele</b>.</p>
+      <div style="text-align:center"><button class="btn-p" onclick="lvlPhishing()">Zkusit znovu ↺</button></div></div>`;
+  }
+}
+
+/* ---------- 3. SQL INJECTION ---------- */
+function lvlSql(){
+  $('#main').innerHTML = `<div class="stage">
+    <div class="kicker">Zámek 3 / 3 · Děravý formulář</div>
+    <h2>Oklam přihlašovací formulář 🧪</h2>
+    <p class="info">Programátor školního systému udělal chybu: to, co napíšeš do formuláře, se <b>vloží přímo do příkazu pro databázi</b>. Dole vidíš, co se z tvého textu stane. Dokážeš napsat jméno tak, aby databáze pustila dovnitř kohokoliv?</p>
+    <div class="row" style="margin-top:16px">
+      <form class="login" id="sf" onsubmit="return trySql(event)" style="flex:1;max-width:400px">
+        <h3>🎓 Školní systém</h3>
+        <div><label>Jméno</label><input id="su" autocomplete="off" oninput="renderSql()" placeholder="např. novak"></div>
+        <div><label>Heslo</label><input id="sp" autocomplete="off" oninput="renderSql()" placeholder="neznáš ho 🙂"></div>
+        <button>Přihlásit</button>
+        <div class="msg" id="smsg"></div>
+      </form>
+      <div class="hints">
+        <div class="hint on">🧠 Databáze pustí dovnitř, když je podmínka za <b>WHERE</b> pravdivá.</div>
+        <button class="btn-s" onclick="sqlHint(0)" id="sh0">💡 Nápověda 1</button>
+        <button class="btn-s" onclick="sqlHint(1)" id="sh1" style="display:none">💡 Nápověda 2</button>
+      </div>
+    </div>
+    <div style="margin-top:16px"><div class="lbl">Příkaz, který se pošle do databáze (SQL)</div><div class="sql" id="sq"></div></div>
+  </div>`;
+  renderSql(); setTimeout(() => $('#su').focus(), 50);
+}
+function renderSql(){
+  const u = $('#su').value, p = $('#sp').value;
+  const piece = v => { const i = v.indexOf("'"); if (i < 0) return `<span class="st">'${H.esc(v)}'</span>`; return `<span class="st">'${H.esc(v.slice(0, i))}</span><span class="inj">${H.esc(v.slice(i))}</span><span class="st">'</span>`; };
+  let html = `<span class="kw">SELECT</span> * <span class="kw">FROM</span> uzivatele <span class="kw">WHERE</span> jmeno = ${piece(u)} <span class="kw">AND</span> heslo = ${piece(p)}`;
+  if (/--/.test(u)) html = html.replace(/(--.*)$/s, '<span class="cm">$1</span>');
+  $('#sq').innerHTML = html + ';';
+}
+function sqlHint(i){
+  if (i === 0){ $('#sh0').outerHTML = `<div class="hint on">💡 Zkus napsat do jména apostrof <b>'</b> a sleduj, co se stane s příkazem dole.</div>`; $('#sh1').style.display = 'block'; }
+  else $('#sh1').outerHTML = `<div class="hint on">💡 Do jména napiš: <b class="mono">' OR 1=1 --</b><br>„OR 1=1“ je vždycky pravda a „--“ zbytek příkazu vypne.</div>`;
+}
+function trySql(e){
+  e.preventDefault();
+  const u = $('#su').value.replace(/\s+/g, ' ').toLowerCase();
+  const ok = /'\s*or\s*('?\w+'?)\s*=\s*\1/.test(u) || /'\s*or\s*true/.test(u) || /'\s*--/.test(u) && /admin/.test(u);
+  if (ok){
+    $('#smsg').style.color = '#16a34a'; $('#smsg').textContent = '✓ Přihlášeno jako: admin (všechny účty!)';
+    $('#main').insertAdjacentHTML('beforeend', `<div class="verdict good" style="margin-top:16px">🔓 Zámek 3 otevřen! Tomuhle útoku se říká <b>SQL injection</b> a patří k nejznámějším chybám na webu.<br>
+      <span style="font-weight:500">Programátoři se mu brání tak, že text z formuláře nikdy nevkládají přímo do příkazu (používají tzv. <b>parametrizované dotazy</b>).</span></div>`);
+    H.speak('Wow, jsi uvnitř systému!'); unlock(2);
+  } else if (u.includes("'")){
+    $('#sf').classList.remove('shake'); void $('#sf').offsetWidth; $('#sf').classList.add('shake'); H.sfx('bad');
+    $('#smsg').style.color = '#e11d48'; $('#smsg').textContent = '⚠️ Chyba databáze: syntax error near "' + $('#su').value.slice(0, 20) + '"… Jsi blízko!';
+  } else {
+    $('#sf').classList.remove('shake'); void $('#sf').offsetWidth; $('#sf').classList.add('shake'); H.sfx('bad');
+    $('#smsg').style.color = '#e11d48'; $('#smsg').textContent = '✗ Špatné jméno nebo heslo';
+  }
+  return false;
+}
+
+/* ---------- FINÁLE + HESLOMĚR ---------- */
+const COMMON = new Set([...WORDLIST, 'qwerty123','1q2w3e','zaq12wsx','dragon','monkey','football','letmein','sunshine','princess','welcome','baseball','superman','batman','minecraft','fortnite','pokemon','heslo12','heslo1234','123456a','a123456']);
+function finale(){
+  clearInterval(tInt); const total = Date.now() - t0;
+  $('#vault').classList.add('open'); H.sfx('win'); H.confetti(innerWidth / 2, innerHeight / 3, 160);
+  H.speak('Trezor je otevřený! Jsi skvělý hacker.');
+  $('#main').innerHTML = `<div class="stage">
+    <div class="kicker">Mise splněna · čas ${fmt(total)}</div>
+    <h2>Trezor je otevřený! 🏆</h2>
+    <p class="info">Prolomil jsi 3 nejčastější bezpečnostní chyby: <b>slabé heslo</b>, <b>phishing</b> a <b>děravý formulář</b>. Přesně tohle se učí na oboru IT v předmětu kyberbezpečnost.</p>
+    <div class="panel" style="margin-top:18px">
+      <div class="kicker" style="margin-bottom:6px">🔐 Bonus: heslometr</div>
+      <h3 style="margin:0 0 6px;font-size:22px">Jak dlouho by hacker lámal tvoje heslo?</h3>
+      <p class="info" style="margin:0 0 12px">Nepiš sem svoje skutečné heslo, napiš nějaké <b>podobné</b>. Nic se nikam neposílá ani neukládá.</p>
+      <div class="pwwrap"><input class="txt mono" id="pm" type="password" autocomplete="off" placeholder="Zkus třeba: Pes2010" oninput="meter()"><button onclick="const i=$('#pm');i.type=i.type==='password'?'text':'password'">👁️</button></div>
+      <div class="meter" style="margin-top:14px"><i id="mi"></i></div>
+      <div class="crack" id="ct">Napiš heslo ☝️</div>
+      <div class="checks" id="ck"></div>
+      <div class="tip" style="margin-top:14px">💡 Nejlepší je <b>dlouhá věta z několika slov</b>, třeba „ModryKoleckoJiDolu7!“. Hodně dlouhá a přitom se dobře pamatuje. A pro každý web jiné heslo!</div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:18px"><a class="btn-p" href="../" style="text-decoration:none">← Zpět do herny</a><button class="btn-s" onclick="location.reload()">Hrát znovu ↺</button></div>
+  </div>`;
+  meter();
+}
+function meter(){
+  const pw = $('#pm').value;
+  if (!pw){ $('#mi').style.width = '0'; $('#ct').textContent = 'Napiš heslo ☝️'; $('#ck').innerHTML = ''; return; }
+  const low = /[a-z]/.test(pw), up = /[A-Z]/.test(pw), dig = /\d/.test(pw), sym = /[^A-Za-z0-9]/.test(pw);
+  let pool = (low ? 26 : 0) + (up ? 26 : 0) + (dig ? 10 : 0) + (sym ? 33 : 0); if (!pool) pool = 10;
+  let combos = Math.pow(pool, pw.length);
+  const common = COMMON.has(pw.toLowerCase()) || COMMON.has(pw.toLowerCase().replace(/\d+$/, ''));
+  const seq = /(012|123|234|345|456|567|678|789|abc|qwe|asd)/i.test(pw), year = /(19|20)\d\d/.test(pw), rep = /(.)\1\1/.test(pw);
+  if (common) combos = 1e3; else { if (seq) combos /= 1e3; if (year) combos /= 100; if (rep) combos /= 100; }
+  const sec = combos / 1e11 / 2; // 100 miliard pokusů za sekundu (grafické karty), v průměru najde v půlce
+  const t = human(sec), score = Math.max(4, Math.min(100, Math.log10(Math.max(1, sec)) * 7 + 20));
+  const col = sec < 3600 ? 'var(--bad)' : sec < 3.15e7 * 10 ? 'var(--warn)' : 'var(--ok)';
+  $('#mi').style.width = score + '%'; $('#mi').style.background = col;
+  $('#ct').innerHTML = `Prolomení: <span style="color:${col}">${t}</span>`;
+  $('#ck').innerHTML = [[pw.length >= 12, `Délka aspoň 12 znaků (máš ${pw.length})`], [low && up, 'Malá i velká písmena'], [dig, 'Číslice'], [sym, 'Speciální znak (!?#…)'], [!common, 'Není v seznamu častých hesel'], [!seq && !year, 'Bez řad (123, qwe) a letopočtů']]
+    .map(([ok, l]) => `<div class="${ok ? 'y' : ''}">${ok ? '✅' : '⬜'} ${l}</div>`).join('');
+}
+function human(s){
+  if (s < 1) return 'okamžitě 😱';
+  const u = [[60, 'sekund'], [60, 'minut'], [24, 'hodin'], [365, 'dní'], [1e3, 'let'], [1e3, 'tisíc let'], [1e3, 'milionů let'], [1e3, 'miliard let']];
+  let v = s, i = 0; while (i < u.length - 1 && v >= u[i][0]){ v /= u[i][0]; i++; }
+  if (i === u.length - 1 && v > 14) return 'déle, než existuje vesmír 🌌';
+  return Math.max(1, Math.round(v)).toLocaleString('cs-CZ') + ' ' + u[i][1];
+}
+
+intro();
+</script>
+</body>
+</html>

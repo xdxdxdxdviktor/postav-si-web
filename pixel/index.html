@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel art – IT Herna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/common.css">
+<style>
+:root{--acc:#38ef7d;--acc2:#11998e}
+body::before{background:radial-gradient(60vw 60vw at 5% -10%,rgba(56,239,125,.14),transparent 60%),radial-gradient(50vw 50vw at 105% 110%,rgba(17,153,142,.14),transparent 60%)}
+.wrap{max-width:1320px;margin:0 auto;padding:22px;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start}
+.canvasbox{position:relative;width:min(72vh,560px);aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:repeating-conic-gradient(#1b1d30 0 25%,#15172a 0 50%) 0 0/12.5% 12.5%;border:2px solid var(--line);touch-action:none;box-shadow:0 30px 70px -30px rgba(0,0,0,.9)}
+.canvasbox canvas{width:100%;height:100%;image-rendering:pixelated;display:block}
+.tools{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.tools button{padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--panel);font-weight:800;font-size:15px}
+.tools button.sel{border-color:var(--acc);background:rgba(56,239,125,.12)}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.pal{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.pal button{aspect-ratio:1/1;border-radius:10px;border:3px solid transparent;padding:0}
+.pal button.sel{border-color:#fff;transform:scale(1.1);box-shadow:0 0 0 3px rgba(255,255,255,.2)}
+.pal .tr{background:repeating-conic-gradient(#555 0 25%,#999 0 50%) 0 0/50% 50%}
+.frames{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.fr{position:relative;width:76px;height:76px;border-radius:12px;border:3px solid var(--line);background:repeating-conic-gradient(#1b1d30 0 25%,#15172a 0 50%) 0 0/25% 25%;cursor:pointer;overflow:hidden}
+.fr canvas{width:100%;height:100%;image-rendering:pixelated}
+.fr.sel{border-color:var(--acc)}
+.fr .num{position:absolute;left:4px;top:2px;font:700 11px 'JetBrains Mono',monospace;color:#fff;text-shadow:0 1px 2px #000}
+.fr .del{position:absolute;right:2px;top:2px;width:20px;height:20px;border-radius:50%;background:#e11d48;color:#fff;font-size:11px;display:grid;place-items:center;border:0}
+.addf{width:76px;height:76px;border-radius:12px;border:3px dashed #3a3f5c;background:transparent;font-size:28px;color:var(--mut)}
+.prev{display:flex;gap:16px;align-items:center}
+.prev canvas{width:128px;height:128px;image-rendering:pixelated;border-radius:14px;background:repeating-conic-gradient(#1b1d30 0 25%,#15172a 0 50%) 0 0/25% 25%;border:2px solid var(--line)}
+.prev input{accent-color:var(--acc)}
+.tpl{display:flex;gap:8px;flex-wrap:wrap}
+.tpl button{padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);font-weight:700;font-size:14px}
+.qr{background:#fff;border-radius:16px;padding:12px;display:flex;gap:12px;align-items:center;color:#1a1a2e}
+.qr b{display:block;font-size:16px}.qr span{font-size:13px;color:#555a78}
+/* hra */
+#game{position:fixed;inset:0;z-index:60;background:#05060c;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}
+#game.on{display:flex}
+#gc{width:min(96vw,900px);aspect-ratio:16/10;image-rendering:pixelated;border-radius:16px;border:3px solid #2a2e45;background:#0b0c16}
+.ghud{display:flex;gap:24px;font:16px 'Press Start 2P',monospace;color:#fff}
+.pad{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(2,64px);gap:6px}
+.pad button{border-radius:14px;border:2px solid var(--line);background:var(--panel);font-size:26px;touch-action:none}
+.viewer{max-width:520px;margin:40px auto;text-align:center;padding:20px}
+.viewer canvas{width:256px;height:256px;image-rendering:pixelated;border-radius:18px;background:repeating-conic-gradient(#1b1d30 0 25%,#15172a 0 50%) 0 0/25% 25%;border:2px solid var(--line)}
+@media (max-width:1000px){.wrap{grid-template-columns:1fr}.canvasbox{width:min(92vw,560px);margin:0 auto}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="game">
+  <div class="ghud"><span>⭐ <b id="gs">0</b></span><span>⏱ <b id="gt">30</b></span></div>
+  <canvas id="gc" width="320" height="200"></canvas>
+  <div style="display:flex;gap:20px;align-items:center">
+    <div class="pad"><span></span><button data-k="up">⬆️</button><span></span><button data-k="left">⬅️</button><button data-k="down">⬇️</button><button data-k="right">➡️</button></div>
+    <div style="color:var(--mut);max-width:260px;line-height:1.5">Sbírej ⭐ a vyhýbej se 💣!<br>Ovládání šipkami nebo tlačítky.</div>
+    <button class="btn-s" onclick="endGame(true)">✕ Konec</button>
+  </div>
+</div>
+<script src="../shared/qrcode.js"></script>
+<script src="../shared/common.js"></script>
+<script>
+const H = Herna, $ = H.$;
+const viewer = location.hash.startsWith('#p-');
+H.init({emoji:'🎨', title:'Pixel art', idle: !viewer});
+
+const N = 16;
+const PAL = ['', '#000000', '#ffffff', '#7f8597', '#ff5e62', '#ff9f43', '#ffd200', '#38ef7d', '#11998e', '#00d4ff', '#2563eb', '#7c5cff', '#f953c6', '#8b5a2b', '#ffc7a1', '#3a2a20'];
+let frames = [new Array(N * N).fill(0)], cur = 0, color = 1, tool = 'pen', fps = 6, drawing = false;
+
+const TPL = {
+  hero:['................','.....444444.....','....44444444....','....eeeeeee.....','...eeee1ee1e....','...eeeeeeeeee...','....eeeeeeee....','.....aaaaaa.....','....aaaaaaaa....','...eaaaaaaaae...','...e.aaaaaa.e...','.....aaaaaa.....','.....aa..aa.....','.....aa..aa.....','....ddd..ddd....','................'],
+  alien:['................','....b......b....','.....b....b.....','....bbbbbbbb....','...bb1bbbb1bb...','..bbbbbbbbbbbb..','..b.bbbbbbbb.b..','..b.b......b.b..','.....bb..bb.....','................','................','................','................','................','................','................'],
+  cat:['................','...3........3...','..333......333..','..3333333333333.','..333333333333..','..33733333373 3.','..333333333333..','..33333cc33333..','...3333333333...','....33333333....','...3333333333...','...3333333333...','...33.3333.33...','...33......33...','................','................']
+};
+const TCH = {'.':0, '1':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, 'a':10, 'b':7, 'c':12, 'd':13, 'e':14};
+function loadTpl(k){
+  const base = TPL[k].join('').replace(/ /g, '.').slice(0, 256).padEnd(256, '.');
+  const f1 = [...base].map(ch => TCH[ch] ?? 0);
+  const f2 = f1.slice(); // druhý snímek: posun o 1 pixel dolů (jednoduchá animace „poskoku“)
+  for (let i = 255; i >= N; i--) f2[i] = f1[i - N]; for (let i = 0; i < N; i++) f2[i] = 0;
+  frames = [f1, f2]; cur = 0; render(); H.sfx('pop');
+}
+
+/* ---------- kreslení na canvas ---------- */
+function paintFrame(ctx, f, size, onion){
+  ctx.clearRect(0, 0, size, size); const px = size / N;
+  if (onion){ ctx.globalAlpha = .22; onion.forEach((c, i) => { if (c){ ctx.fillStyle = PAL[c]; ctx.fillRect(i % N * px, Math.floor(i / N) * px, px, px); } }); ctx.globalAlpha = 1; }
+  f.forEach((c, i) => { if (c){ ctx.fillStyle = PAL[c]; ctx.fillRect(i % N * px, Math.floor(i / N) * px, px, px); } });
+}
+function drawMain(){
+  const cv = $('#cv'); if (!cv) return; const ctx = cv.getContext('2d');
+  paintFrame(ctx, frames[cur], 512, cur > 0 ? frames[cur - 1] : null);
+  ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1;
+  for (let i = 1; i < N; i++){ ctx.beginPath(); ctx.moveTo(i * 32 + .5, 0); ctx.lineTo(i * 32 + .5, 512); ctx.moveTo(0, i * 32 + .5); ctx.lineTo(512, i * 32 + .5); ctx.stroke(); }
+}
+function drawThumbs(){ frames.forEach((f, i) => { const c = $('#th' + i); if (c) paintFrame(c.getContext('2d'), f, 32); }); }
+function idxAt(e){ const r = $('#cv').getBoundingClientRect(); const x = Math.floor((e.clientX - r.left) / r.width * N), y = Math.floor((e.clientY - r.top) / r.height * N); return x < 0 || y < 0 || x >= N || y >= N ? -1 : y * N + x; }
+function apply(i){
+  if (i < 0) return; const f = frames[cur];
+  if (tool === 'fill'){ const from = f[i], to = color; if (from === to) return; const st = [i]; while (st.length){ const j = st.pop(); if (f[j] !== from) continue; f[j] = to; const x = j % N, y = Math.floor(j / N); if (x > 0) st.push(j - 1); if (x < N - 1) st.push(j + 1); if (y > 0) st.push(j - N); if (y < N - 1) st.push(j + N); } H.sfx('pop'); }
+  else { const v = tool === 'erase' ? 0 : color; if (f[i] === v) return; f[i] = v; }
+  drawMain(); drawThumbs(); qrLater();
+}
+
+/* ---------- sdílení: RLE do odkazu ---------- */
+function enc(){ return '#p-' + fps + '-' + frames.map(f => { let s = '', i = 0; while (i < f.length){ let r = 1; while (i + r < f.length && f[i + r] === f[i] && r < 35) r++; s += f[i].toString(16) + r.toString(36); i += r; } return s; }).join('-'); }
+function dec(h){
+  const parts = h.slice(1).split('-'); fps = Math.min(12, Math.max(2, +parts[1] || 6));
+  frames = parts.slice(2).filter(Boolean).slice(0, 4).map(s => { const f = []; for (let i = 0; i + 1 < s.length; i += 2){ const c = parseInt(s[i], 16), r = parseInt(s[i + 1], 36); for (let k = 0; k < r; k++) f.push(c); } return f.slice(0, 256).concat(new Array(Math.max(0, 256 - f.length)).fill(0)); });
+  if (!frames.length) frames = [new Array(256).fill(0)];
+}
+let qrT; function qrLater(){ clearTimeout(qrT); qrT = setTimeout(() => { const q = $('#qr'); if (q) q.innerHTML = H.qr(H.base() + enc(), 150, 'L'); }, 400); }
+
+/* ---------- animace náhledu ---------- */
+let aIdx = 0, aLast = 0;
+function animLoop(t){
+  if (t - aLast > 1000 / fps){ aLast = t; aIdx = (aIdx + 1) % frames.length; const p = $('#pv'); if (p) paintFrame(p.getContext('2d'), frames[aIdx], 64); }
+  requestAnimationFrame(animLoop);
+}
+
+function render(){
+  if (viewer){ renderViewer(); return; }
+  $('#app').innerHTML = `<div class="wrap"><div>
+    <div class="canvasbox"><canvas id="cv" width="512" height="512"></canvas></div>
+    <div class="tools">
+      ${[['pen', '✏️ Tužka'], ['erase', '🧽 Guma'], ['fill', '🪣 Výplň']].map(([k, l]) => `<button class="${tool === k ? 'sel' : ''}" onclick="tool='${k}';render()">${l}</button>`).join('')}
+      <button onclick="frames[cur].fill(0);drawMain();drawThumbs()">🗑️ Vymazat snímek</button>
+    </div>
+  </div>
+  <div class="side">
+    <div><div class="kicker">Krok 1 · nakresli postavičku</div><p class="info" style="margin:6px 0 0">Kresli po čtverečcích (pixelech) jako ve starých hrách. Nechceš začínat od nuly? Vezmi šablonu:</p></div>
+    <div class="tpl"><button onclick="loadTpl('hero')">🧑 Hrdina</button><button onclick="loadTpl('alien')">👾 Vetřelec</button><button onclick="loadTpl('cat')">🐱 Kočka</button></div>
+    <div><div class="lbl">Barvy</div><div class="pal">${PAL.map((c, i) => `<button class="${i === color ? 'sel' : ''} ${i ? '' : 'tr'}" style="${i ? 'background:' + c : ''}" onclick="color=${i};tool=${i ? "tool==='erase'?'pen':tool" : "'erase'"};render()"></button>`).join('')}</div></div>
+    <div><div class="kicker">Krok 2 · rozpohybuj ji</div><p class="info" style="margin:6px 0 8px">Animace je jen několik obrázků rychle za sebou. Přidej snímek, trochu postavičku změň (třeba nohy) a sleduj náhled. Průsvitně vidíš předchozí snímek.</p>
+      <div class="frames">${frames.map((_, i) => `<div class="fr ${i === cur ? 'sel' : ''}" onclick="cur=${i};render()"><canvas id="th${i}" width="32" height="32"></canvas><span class="num">${i + 1}</span>${frames.length > 1 ? `<button class="del" onclick="event.stopPropagation();frames.splice(${i},1);cur=Math.min(cur,frames.length-1);render()">✕</button>` : ''}</div>`).join('')}
+      ${frames.length < 4 ? `<button class="addf" onclick="frames.splice(cur+1,0,frames[cur].slice());cur++;render();H.sfx('pop')" title="Kopie aktuálního snímku">＋</button>` : ''}</div></div>
+    <div class="prev"><canvas id="pv" width="64" height="64"></canvas><div><div class="lbl">Rychlost: <span id="fv">${fps}</span> snímků/s</div><input type="range" min="2" max="12" value="${fps}" oninput="fps=+this.value;$('#fv').textContent=fps;qrLater()"></div></div>
+    <button class="btn-p" style="font-size:20px" onclick="startGame()">🎮 Krok 3 · Zahraj si s postavičkou</button>
+    <div class="qr"><div id="qr"></div><div><b>📱 Odnes si ji v mobilu</b><span>Naskenuj a animace se ti přehraje.</span></div></div>
+  </div></div>`;
+  drawMain(); drawThumbs(); qrLater();
+  const cv = $('#cv');
+  cv.onpointerdown = e => { drawing = true; cv.setPointerCapture(e.pointerId); apply(idxAt(e)); };
+  cv.onpointermove = e => { if (drawing && tool !== 'fill') apply(idxAt(e)); };
+  cv.onpointerup = cv.onpointercancel = () => drawing = false;
+}
+function renderViewer(){
+  $('#app').innerHTML = `<div class="viewer"><div class="kicker">Pixel art z IT Herny · 1. KŠPA Litoměřice</div><h1 style="font-size:36px;margin:10px 0 20px">🎨 Postavička pro tebe!</h1>
+    <canvas id="pv" width="64" height="64"></canvas><p class="info">${frames.length} snímky · ${fps} snímků/s</p>
+    <p style="margin-top:20px"><a class="btn-s" style="text-decoration:none;display:inline-block" href="${H.base()}">🖌️ Nakreslit vlastní</a></p></div>`;
+}
+
+/* ---------- mini hra ---------- */
+let G = null; const keys = {};
+addEventListener('keydown', e => { const k = {ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right', w:'up', s:'down', a:'left', d:'right'}[e.key]; if (k && G){ keys[k] = true; e.preventDefault(); } });
+addEventListener('keyup', e => { const k = {ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right', w:'up', s:'down', a:'left', d:'right'}[e.key]; if (k) keys[k] = false; });
+document.querySelectorAll('.pad button').forEach(b => { b.onpointerdown = e => { e.preventDefault(); keys[b.dataset.k] = true; }; b.onpointerup = b.onpointerleave = b.onpointercancel = () => keys[b.dataset.k] = false; });
+function sprites(){ return frames.map(f => { const c = document.createElement('canvas'); c.width = c.height = N; paintFrame(c.getContext('2d'), f, N); return c; }); }
+function startGame(){
+  if (!frames.some(f => f.some(Boolean))){ H.toast('Nejdřív něco nakresli 🙂'); return; }
+  $('#game').classList.add('on'); H.pauseIdle && H.pauseIdle();
+  G = {x: 150, y: 90, face: 1, sp: sprites(), fi: 0, ft: 0, score: 0, end: performance.now() + 30000, stars: [], bombs: [], last: performance.now()};
+  for (let i = 0; i < 4; i++) G.stars.push(spawn()); for (let i = 0; i < 3; i++) G.bombs.push({...spawn(), vx: (Math.random() - .5) * 1.6, vy: (Math.random() - .5) * 1.6});
+  H.sfx('win'); requestAnimationFrame(gloop);
+}
+const spawn = () => ({x: 20 + Math.random() * 280, y: 20 + Math.random() * 160});
+function gloop(t){
+  if (!G) return;
+  const ctx = $('#gc').getContext('2d'), dt = Math.min(40, t - G.last) / 16; G.last = t;
+  let mx = (keys.right ? 1 : 0) - (keys.left ? 1 : 0), my = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+  const moving = mx || my; G.x = Math.max(0, Math.min(320 - 32, G.x + mx * 2.4 * dt)); G.y = Math.max(0, Math.min(200 - 32, G.y + my * 2.4 * dt)); if (mx) G.face = mx;
+  if (moving && t - G.ft > 1000 / fps){ G.ft = t; G.fi = (G.fi + 1) % G.sp.length; }
+  ctx.fillStyle = '#0f1424'; ctx.fillRect(0, 0, 320, 200);
+  ctx.fillStyle = '#141b30'; for (let x = 0; x < 320; x += 20) for (let y = 0; y < 200; y += 20) if ((x + y) % 40 === 0) ctx.fillRect(x, y, 20, 20);
+  ctx.font = '14px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  G.stars.forEach((s, i) => { ctx.fillText('⭐', s.x, s.y + Math.sin(t / 200 + i) * 2); if (Math.hypot(s.x - G.x - 16, s.y - G.y - 16) < 18){ G.score++; G.stars[i] = spawn(); H.tone(880 + G.score * 20, 0, .08, 'square', .05); } });
+  G.bombs.forEach(b => { b.x += b.vx * dt; b.y += b.vy * dt; if (b.x < 8 || b.x > 312) b.vx *= -1; if (b.y < 8 || b.y > 192) b.vy *= -1; ctx.fillText('💣', b.x, b.y); if (Math.hypot(b.x - G.x - 16, b.y - G.y - 16) < 16){ G.score = Math.max(0, G.score - 2); Object.assign(b, spawn()); H.sfx('bad'); } });
+  ctx.save(); ctx.imageSmoothingEnabled = false; ctx.translate(G.x + 16, G.y + 16); ctx.scale(G.face < 0 ? -1 : 1, 1); ctx.drawImage(G.sp[G.fi], -16, -16, 32, 32); ctx.restore();
+  const left = Math.max(0, Math.ceil((G.end - t) / 1000));
+  $('#gs').textContent = G.score; $('#gt').textContent = left;
+  if (left <= 0) return endGame(false);
+  requestAnimationFrame(gloop);
+}
+function endGame(quit){
+  if (!G) return; const sc = G.score; G = null; $('#game').classList.remove('on'); H.resumeIdle && H.resumeIdle();
+  if (!quit){ H.sfx('win'); H.confetti(innerWidth / 2, innerHeight / 3, 120); H.toast(`🎮 Konec hry! Nasbíral jsi ${sc} ⭐`, 4000); H.speak(`Nasbíral jsi ${sc} hvězd!`); }
+}
+
+if (viewer) dec(location.hash); else loadTpl('hero');
+render(); requestAnimationFrame(animLoop);
+if (!viewer) H.speak('Ahoj! Nakresli si postavičku a rozpohybuj ji.');
+</script>
+</body>
+</html>
