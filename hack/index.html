@@ -279,9 +279,10 @@ function lvlSql(){
         <div class="msg" id="smsg"></div>
       </form>
       <div class="hints">
-        <div class="hint on">🧠 Databáze pustí dovnitř, když je podmínka za <b>WHERE</b> pravdivá.</div>
-        <button class="btn-s" onclick="sqlHint(0)" id="sh0">💡 Nápověda 1</button>
-        <button class="btn-s" onclick="sqlHint(1)" id="sh1" style="display:none">💡 Nápověda 2</button>
+        <div class="hint on">🧠 Ťukni postupně na tlačítka, text se vloží do jména. Pak klikni na <b>Přihlásit</b> a sleduj příkaz dole.</div>
+        <button class="btn-s" style="text-align:left" onclick="ins('novak')">1️⃣ <b class="mono">novak</b> <small style="color:var(--mut)">normální jméno</small></button>
+        <button class="btn-s" style="text-align:left" onclick="ins(&quot;'&quot;)">2️⃣ <b class="mono">'</b> <small style="color:var(--mut)">apostrof rozbije příkaz</small></button>
+        <button class="btn-s" style="text-align:left;border-color:var(--acc)" onclick="ins(&quot;' OR 1=1 --&quot;)">3️⃣ 🪄 <b class="mono">' OR 1=1 --</b> <small style="color:var(--mut)">kouzelný kód</small></button>
       </div>
     </div>
     <div style="margin-top:16px"><div class="lbl">Příkaz, který se pošle do databáze (SQL)</div><div class="sql" id="sq"></div></div>
@@ -295,6 +296,7 @@ function renderSql(){
   if (/--/.test(u)) html = html.replace(/(--.*)$/s, '<span class="cm">$1</span>');
   $('#sq').innerHTML = html + ';';
 }
+function ins(v){ $('#su').value = v; renderSql(); H.sfx('pop'); }
 function sqlHint(i){
   if (i === 0){ $('#sh0').outerHTML = `<div class="hint on">💡 Zkus napsat do jména apostrof <b>'</b> a sleduj, co se stane s příkazem dole.</div>`; $('#sh1').style.display = 'block'; }
   else $('#sh1').outerHTML = `<div class="hint on">💡 Do jména napiš: <b class="mono">' OR 1=1 --</b><br>„OR 1=1“ je vždycky pravda a „--“ zbytek příkazu vypne.</div>`;
@@ -302,7 +304,7 @@ function sqlHint(i){
 function trySql(e){
   e.preventDefault();
   const u = $('#su').value.replace(/\s+/g, ' ').toLowerCase();
-  const ok = /'\s*or\s*('?\w+'?)\s*=\s*\1/.test(u) || /'\s*or\s*true/.test(u) || /'\s*--/.test(u) && /admin/.test(u);
+  const ok = u.includes("'") && (/\bor\b/.test(u) || u.includes('--'));
   if (ok){
     $('#smsg').style.color = '#16a34a'; $('#smsg').textContent = '✓ Přihlášeno jako: admin (všechny účty!)';
     $('#main').insertAdjacentHTML('beforeend', `<div class="verdict good" style="margin-top:16px">🔓 Zámek 3 otevřen! Tomuhle útoku se říká <b>SQL injection</b> a patří k nejznámějším chybám na webu.<br>
