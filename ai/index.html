@@ -159,7 +159,7 @@ async function loadGR(){
     const vision = await import(V + '/vision_bundle.mjs');
     const files = await vision.FilesetResolver.forVisionTasks(V + '/wasm');
     const opts = d => ({baseOptions: {modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task', delegate: d}, runningMode: 'VIDEO', numHands: 1});
-    try { gr = await vision.GestureRecognizer.createFromOptions(files, opts('GPU')); } catch(e){ gr = await vision.GestureRecognizer.createFromOptions(files, opts('CPU')); }
+    gr = await Promise.race([vision.GestureRecognizer.createFromOptions(files, opts('CPU')), new Promise((_, j) => setTimeout(() => j('timeout'), 30000))]);
     grState = 'ready'; H.sfx('ding');
   } catch(e){ console.warn(e); grState = 'fail'; }
   if (M === 'rps') renderRps();
