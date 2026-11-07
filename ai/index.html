@@ -149,10 +149,50 @@ function grab(i, list, thumbsArr, maxPer = 120){
   H.tone(600 + i * 150, 0, .04, 'triangle', .03); return true;
 }
 
+/* ---------- předtrénovaný model gest (MediaPipe) ---------- */
+let gr = null, grState = 'idle', grBuf = [];
+const GMAP = {Closed_Fist: 0, Open_Palm: 1, Victory: 2};
+async function loadGR(){
+  if (grState !== 'idle') return; grState = 'loading';
+  try {
+    const V = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+    const vision = await import(V + '/vision_bundle.mjs');
+    const files = await vision.FilesetResolver.forVisionTasks(V + '/wasm');
+    const opts = d => ({baseOptions: {modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task', delegate: d}, runningMode: 'VIDEO', numHands: 1});
+    try { gr = await vision.GestureRecognizer.createFromOptions(files, opts('GPU')); } catch(e){ gr = await vision.GestureRecognizer.createFromOptions(files, opts('CPU')); }
+    grState = 'ready'; H.sfx('ding');
+  } catch(e){ console.warn(e); grState = 'fail'; }
+  if (M === 'rps') renderRps();
+}
+let grT = 0;
+function grDetect(){
+  try {
+    const t = Math.max(performance.now(), grT + 1); grT = t;
+    const r = gr.recognizeForVideo($('#cam'), t), g = r.gestures && r.gestures[0] && r.gestures[0][0];
+    if (!g) return {c: -1, s: 0, hand: false};
+    return g.categoryName in GMAP ? {c: GMAP[g.categoryName], s: g.score, hand: true} : {c: -1, s: g.score, hand: true};
+  } catch(e){ return {c: -1, s: 0, hand: false}; }
+}
+
 /* ---------- režim: kámen-nůžky-papír ---------- */
 const RPS = [{e:'✊', n:'Kámen'}, {e:'✋', n:'Papír'}, {e:'✌️', n:'Nůžky'}];
 let rdata = [], rthumbs = [[], [], []], sc = [0, 0], playing = false;
 function renderRps(){
+  if (grState === 'loading' || grState === 'idle'){
+    $('#right').innerHTML = `<div class="game"><div class="kicker">Načítám AI</div><div class="panel" style="text-align:center;font-size:18px;line-height:1.5"><div style="font-size:60px">🧠⏳</div>Stahuji AI model, který se učil na <b>tisících fotek rukou</b>…<br><span class="info">Chvilku to trvá, potřebuje internet.</span></div></div>`;
+    return;
+  }
+  if (grState === 'ready'){
+    $('#right').innerHTML = `<div class="game">
+      <div class="kicker">Hraj proti AI · nic netrénuješ</div>
+      <p class="info" style="margin:0">Tahle AI už je <b>předtrénovaná</b> na obrovském množství fotek rukou. Ukaž do kamery <b>pěst ✊</b>, <b>dlaň ✋</b> nebo <b>dva prsty ✌️</b> a sleduj, jak je pozná.</p>
+      ${RPS.map((c, i) => `<div class="cls" id="cl${i}" style="padding:10px"><div class="ch"><div class="em">${c.e}</div><b style="flex:1;font-size:19px">${c.n}</b></div><div class="bar"><i id="pb${i}"></i></div></div>`).join('')}
+      <div class="score"><div><b id="s0">${sc[0]}</b><span>Ty</span></div><div style="font-size:30px">⚔️</div><div><b id="s1">${sc[1]}</b><span>AI 🤖</span></div></div>
+      <div class="vs" id="vs"><div><span id="me">❔</span><small>Ty</small></div><div style="font-size:40px">VS</div><div><span id="ai">🤖</span><small>AI</small></div></div>
+      <div class="cd" id="cd"></div><div class="res" id="res">Hraje se na 3 vítězství</div>
+      <button class="btn-p" id="playBtn" onclick="round()" style="font-size:20px">▶️ Hrát kolo</button></div>`;
+    return;
+  }
   const ready = [0, 1, 2].every(i => rdata.filter(d => d.c === i).length >= 15);
   $('#right').innerHTML = `<div class="game">
     <div class="kicker">${ready ? 'Krok 2 · hraj!' : 'Krok 1 · nauč AI tvoje gesta'}</div>
@@ -166,7 +206,7 @@ function renderRps(){
       <div class="cd" id="cd"></div><div class="res" id="res">Hraje se na 3 vítězství</div>
       <button class="btn-p" id="playBtn" onclick="round()" style="font-size:20px">▶️ Hrát kolo</button>
       <button class="btn-s" onclick="rdata=[];rthumbs=[[],[],[]];sc=[0,0];renderRps()">↺ Přetrénovat</button>`
-    : `<div class="tip">💡 Drž ruku pořád na stejném místě v kameře. Až bude mít každé gesto 15 fotek, můžeš hrát.</div>`}
+    : `<div class="tip">💡 AI model se nepodařilo stáhnout (asi chybí internet), tak si AI natrénuj sám. Drž ruku blízko kamery a pořád na stejném místě. Až bude mít každé gesto 15 fotek, můžeš hrát.</div>`}
   </div>`;
 }
 const BEATS = {0: 2, 1: 0, 2: 1}; // kámen bere nůžky, papír bere kámen, nůžky berou papír
@@ -180,7 +220,10 @@ async function round(){
     $('#cd').textContent = words[i]; H.tone(440 + i * 120, 0, .15, 'triangle', .1);
     await new Promise(r => setTimeout(r, 650));
   }
-  for (let i = 0; i < 6; i++){ const p = predict(rdata, 3); if (p) buf.push(p); await new Promise(r => setTimeout(r, 60)); }
+  if (grState === 'ready'){
+    for (let i = 0; i < 8; i++){ const d = grDetect(); if (d.c >= 0){ const p = [0, 0, 0]; p[d.c] = d.s; buf.push(p); } await new Promise(r => setTimeout(r, 50)); }
+    if (!buf.length){ $('#cd').textContent = ''; $('#res').textContent = '🤔 AI tvoji ruku neviděla. Ukaž ✊, ✋ nebo ✌️ blíž ke kameře a zkus to znovu.'; H.sfx('bad'); playing = false; $('#playBtn').disabled = false; return; }
+  } else for (let i = 0; i < 6; i++){ const p = predict(rdata, 3); if (p) buf.push(p); await new Promise(r => setTimeout(r, 60)); }
   const avg = [0, 1, 2].map(c => buf.reduce((a, p) => a + p[c], 0) / buf.length), me = avg.indexOf(Math.max(...avg));
   const ai = Math.floor(Math.random() * 3);
   $('#cd').textContent = ''; $('#me').textContent = RPS[me].e; $('#ai').textContent = RPS[ai].e;
@@ -208,6 +251,16 @@ function loop(){
         if (!isT && [0, 1, 2].every(i => rdata.filter(d => d.c === i).length >= 15) && !$('#playBtn')){ recording = -1; $('#rec').style.display = 'none'; H.sfx('win'); H.speak('Mám to naučené. Můžeme hrát!'); renderRps(); }
       }
     }
+    if (!isT && grState === 'ready'){
+      const d = grDetect(), tgt = [0, 0, 0]; if (d.c >= 0) tgt[d.c] = d.s;
+      smooth = smooth.map((s, i) => s * .5 + tgt[i] * .5);
+      const top = smooth.indexOf(Math.max(...smooth));
+      if (d.hand && smooth[top] > .25){ $('#pred').classList.add('on'); $('#pe').textContent = RPS[top].e; $('#pl').textContent = RPS[top].n; $('#pc').textContent = `jistota ${Math.round(smooth[top] * 100)} %`; }
+      else if (d.hand){ $('#pred').classList.add('on'); $('#pe').textContent = '🖐️'; $('#pl').textContent = 'Vidím ruku…'; $('#pc').textContent = 'ukaž ✊ ✋ nebo ✌️'; }
+      else $('#pred').classList.remove('on');
+      for (let i = 0; i < 3; i++){ const b = $('#pb' + i); if (b) b.style.width = Math.round(smooth[i] * 100) + '%'; $('#cl' + i)?.classList.toggle('top', d.hand && i === top && smooth[top] > .25); }
+      setTimeout(loop, 70); return;
+    }
     const counts = [0, 1, 2].map(i => list.filter(d => d.c === i).length), active = counts.filter(c => c >= (isT ? 15 : 15)).length;
     if (active >= 2 && recording < 0){
       const p = predict(list, n);
@@ -223,7 +276,7 @@ function loop(){
 function mode(m){
   M = m; $('#tTrain').classList.toggle('sel', m === 'train'); $('#tRps').classList.toggle('sel', m === 'rps');
   smooth = [0, 0, 0]; recording = -1; $('#pred').classList.remove('on');
-  if (m === 'train') renderTrain(); else renderRps();
+  if (m === 'train') renderTrain(); else { renderRps(); loadGR(); }
 }
 resetTrain(); renderTrain(); startCam(); loop();
 H.speak('Ahoj! Naučíme spolu umělou inteligenci poznávat tvoje gesta.');
